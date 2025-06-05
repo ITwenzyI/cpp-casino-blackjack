@@ -1,10 +1,10 @@
 # Prerequisites
 *.d
 
+.idea/
 # Compiled Object files
 *.slo
 *.lo
-*.o
 *.obj
 
 # Precompiled Headers
@@ -26,7 +26,33 @@
 *.a
 *.lib
 
-# Executables
+# Build-Ordner
+cmake-build-debug/
+cmake-build-release/
+
+# CMake-Dateien
+CMakeFiles/
+CMakeCache.txt
+Makefile
+install_manifest.txt
+
+# CLion & JetBrains spezifische Dateien
+.idea/
+*.iml
+
+# Compiler-Ausgaben
+*.o
+*.obj
 *.exe
 *.out
+*.a
+*.so
+*.dll
 *.app
+
+# Log-Dateien
+*.log
+
+# Mac/Linux spezifisch (falls du zwischen Windows & macOS arbeitest)
+.DS_Store
+*.swp
