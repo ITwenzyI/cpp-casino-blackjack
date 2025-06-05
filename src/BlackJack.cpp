@@ -37,6 +37,8 @@ void BlackJack::mainmenu_bj() {
 
 void BlackJack::startplay_bj() {
   KartenPrintAusgabe printer;
+  std::vector<int> player_cards;
+  std::vector<int> dealer_cards;
   int dealer_hand_newcard = 0;
   int dealer_hand_value = 0;
   int dealer_hand_valueall = 0;
@@ -44,7 +46,6 @@ void BlackJack::startplay_bj() {
   int player_hand_newcard = 0;
   int player_hand_value = 0;
   int player_hand_valueall = 0;
-  int player_einsatz;
   string player_choice_nextcard;
   std::string player_name;
 
@@ -55,10 +56,6 @@ void BlackJack::startplay_bj() {
 
   cout << "Willkommen in Blackjack " << player_name << endl;
 
-  cout << "Setze deinen Einsatz für das Spiel:" << endl;
-  cin >> player_einsatz;
-  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // WICHTIG!
-
   cout << "Das Spiel startet..." << endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -68,11 +65,8 @@ void BlackJack::startplay_bj() {
   std::this_thread::sleep_for(std::chrono::seconds(1));
   cout << "Dealers aktuelle optische Hand:" << endl;
   dealer_hand_newcard = random_number(2, 14);
-  if (dealer_hand_newcard > 10) {
-    dealer_hand_value = 10;
-  }
-  else dealer_hand_value = dealer_hand_newcard;
-  dealer_hand_valueall += dealer_hand_value;
+  dealer_cards.push_back(dealer_hand_newcard);
+  dealer_hand_valueall = calculate_hand_value(dealer_cards);
 
   build_hand_dealer(dealer_hand_newcard);
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
@@ -87,11 +81,8 @@ void BlackJack::startplay_bj() {
 
   cout << player_name << "s aktuelle optische Hand:" << endl;
   player_hand_newcard = random_number(2, 14);
-  if (player_hand_newcard > 10) {
-    player_hand_value = 10;
-  }
-  else player_hand_value = player_hand_newcard;
-  player_hand_valueall += player_hand_value;
+  player_cards.push_back(player_hand_newcard);
+  player_hand_valueall = calculate_hand_value(player_cards);
 
   build_hand_player(player_hand_newcard);
 
@@ -100,26 +91,26 @@ void BlackJack::startplay_bj() {
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
   while(player_hand_valueall < 21 && player_hand_valueall != 0) {
-    player_hand_valueall = nextcard_player(player_hand_valueall, player_hand_value, player_name, dealer_hand_valueall);
+    player_hand_valueall = nextcard_player(player_cards, player_name, dealer_hand_valueall);
   }
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  while(dealer_hand_valueall < 17) {
+  while (dealer_hand_valueall < 17) {
     cout << "----------------------------------------------------------" << endl;
-  cout << "Dealers aktuelle optische Hand:" << endl;
-  dealer_hand_newcard = random_number(2, 14);
-  if (dealer_hand_newcard > 10) {
-    dealer_hand_value = 10;
-  }
-  else dealer_hand_value = dealer_hand_newcard;
-  dealer_hand_valueall += dealer_hand_value;
+    cout << "Dealers aktuelle optische Hand:" << endl;
 
-  build_hand_dealer(dealer_hand_newcard);
-  cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
-  if(check_value_dealer(dealer_hand_valueall)) {
-    cout << "Keine Karte mehr für Dealer!" << endl;
-  }
+    dealer_hand_newcard = random_number(2, 14);
+    dealer_cards.push_back(dealer_hand_newcard);
+    dealer_hand_valueall = calculate_hand_value(dealer_cards);
+
+    build_hand_dealer(dealer_hand_newcard);
+    cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
+
+    if (check_value_dealer(dealer_hand_valueall)) {
+      cout << "Keine Karte mehr für Dealer!" << endl;
+    }
+
     std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 
@@ -162,8 +153,7 @@ bool BlackJack::check_value_dealer(const int value_dealer) {
 }
 
 
-
-int BlackJack::nextcard_player(int player_hand_valueall, int player_hand_value, const string& player_name, int dealer_hand_valueall) {
+int BlackJack::nextcard_player(std::vector<int>& player_cards, const string& player_name, int dealer_hand_valueall) {
   string player_choice_nextcard;
   int player_hand_newcard = 0;
 
@@ -172,26 +162,28 @@ int BlackJack::nextcard_player(int player_hand_valueall, int player_hand_value, 
   cout << "----------------------------------------------------------" << endl;
 
   transform(player_choice_nextcard.begin(), player_choice_nextcard.end(), player_choice_nextcard.begin(), ::tolower);
-  if (player_choice_nextcard == "ja") {
-    player_hand_newcard = random_number(2, 14);
+  if (player_choice_nextcard != "ja") {
+    return calculate_hand_value(player_cards) + 99;
   }
-  else return player_hand_valueall + 99;
 
-  if (player_hand_newcard > 10) {
-    player_hand_value = 10;
-  }
-  else player_hand_value = player_hand_newcard;
-  player_hand_valueall += player_hand_value;
+  player_hand_newcard = random_number(2, 14);
+  player_cards.push_back(player_hand_newcard);
+
+  int player_hand_valueall = calculate_hand_value(player_cards);
+
   cout << player_name << "s aktueller Handwert: " << player_hand_valueall << endl;
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
   cout << player_name << "s aktuelle optische Hand:" << endl;
   build_hand_player(player_hand_newcard);
+
   if (player_hand_valueall > 21) {
     cout << player_name << " ... Du bist leider über 21..." << endl;
   }
+
   return player_hand_valueall;
 }
+
 
 int BlackJack::result_game(const int value_player, const int value_dealer) {
   cout << "----------------------------------------------------------" << endl;
@@ -394,6 +386,30 @@ void BlackJack::print_hand(const std::vector<std::pair<std::string, std::string>
   KartenPrintAusgabe printer;
   printer.printCards(hand);
 }
+
+int BlackJack::calculate_hand_value(const std::vector<int>& cards) {
+  int total = 0;
+  int aces = 0; // asses aber besser
+
+  for (int card : cards) {
+    if (card == 14) {
+      total += 11;
+      aces++;
+    } else if (card > 10) {
+      total += 10;
+    } else {
+      total += card;
+    }
+  }
+
+  while (total > 21 && aces > 0) {
+    total -= 10; // Zähle ein Ass als 1 statt 11
+    aces--;
+  }
+
+  return total;
+}
+
 
 
 int BlackJack::random_number(int anfang, int ende) {
