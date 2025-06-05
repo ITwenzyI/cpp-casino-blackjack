@@ -95,9 +95,11 @@ void BlackJack::startplay_bj() {
 
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
-  while(player_hand_valueall < 21 && player_hand_valueall != 0) {
-    player_hand_valueall = nextcard_player(player_cards, player_name, dealer_hand_valueall);
+  bool weiter = true;
+  while (weiter && player_hand_valueall < 21) {
+    weiter = nextcard_player(player_cards, player_name, dealer_hand_valueall, player_hand_valueall);
   }
+
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -117,10 +119,6 @@ void BlackJack::startplay_bj() {
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
-  }
-
-  if(player_hand_valueall - 99 > 0) {
-    player_hand_valueall = player_hand_valueall - 99;
   }
 
 
@@ -154,7 +152,7 @@ void BlackJack::startplay_bj() {
 }
 
 
-int BlackJack::nextcard_player(std::vector<int>& player_cards, const string& player_name, int dealer_hand_valueall) {
+bool BlackJack::nextcard_player(std::vector<int>& player_cards, const string& player_name, int dealer_hand_valueall, int& player_hand_valueall) {
   string player_choice_nextcard;
   int player_hand_newcard = 0;
 
@@ -164,13 +162,13 @@ int BlackJack::nextcard_player(std::vector<int>& player_cards, const string& pla
 
   transform(player_choice_nextcard.begin(), player_choice_nextcard.end(), player_choice_nextcard.begin(), ::tolower);
   if (player_choice_nextcard != "ja") {
-    return calculate_hand_value(player_cards) + 99;
+    return false; // Spieler möchte keine Karte
   }
 
   player_hand_newcard = random_number(2, 14);
   player_cards.push_back(player_hand_newcard);
 
-  int player_hand_valueall = calculate_hand_value(player_cards);
+  player_hand_valueall = calculate_hand_value(player_cards);
 
   cout << player_name << "s aktueller Handwert: " << player_hand_valueall << endl;
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
@@ -182,8 +180,9 @@ int BlackJack::nextcard_player(std::vector<int>& player_cards, const string& pla
     cout << player_name << " ... Du bist leider über 21..." << endl;
   }
 
-  return player_hand_valueall;
+  return true; // Spieler hat eine Karte genommen
 }
+
 
 
 int BlackJack::result_game(const int value_player, const int value_dealer) {

@@ -13,7 +13,7 @@ class BlackJack {
     void startplay_bj();
     void rules_bj();
     static bool check_value_dealer(int value_dealer);
-    int nextcard_player(std::vector<int>& player_cards, const std::string& player_name, int dealer_hand_valueall);
+    bool nextcard_player(std::vector<int>& player_cards, const std::string& player_name, int dealer_hand_valueall, int& player_hand_valueall);
     int result_game(int value_player, int value_dealer);
     int random_number(int anfang, int ende);
     void print_hand(const std::vector<std::pair<std::string, std::string>> &hand);
