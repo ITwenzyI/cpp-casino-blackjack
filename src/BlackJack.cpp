@@ -112,7 +112,7 @@ void BlackJack::startplay_bj() {
     build_hand_dealer(dealer_hand_newcard);
     cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
-    if (check_value_dealer(dealer_hand_valueall)) {
+    if (dealer_hand_valueall >= 17) {
       cout << "Keine Karte mehr für Dealer!" << endl;
     }
 
@@ -151,12 +151,6 @@ void BlackJack::startplay_bj() {
   cin >> ende;
   build_hand_player(0);  // leere Spielerhand
   build_hand_dealer(0);  // leere Dealerhand
-}
-
-
-
-bool BlackJack::check_value_dealer(const int value_dealer) {
-  return value_dealer >= 17;
 }
 
 
