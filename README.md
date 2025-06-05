@@ -47,12 +47,13 @@ It features a simplified casino-style rule set, full game loop, card drawing vis
 ## 💡 Notes
 - The game currently supports only one player vs dealer.
 - It's designed for learning purposes, not for gambling.
-  - Future features could include:
-    - Multiple players
-    - Money System
-    - Split / double down mechanics
+- Future features could include:
+  - Multiple players
+  - Money System
+  - Split / double down mechanics
 
 ---
 
-## 🧑‍💻 Author
-Created by **Kilian**
+## 👤 Author
+This project was created by **Kilian** as part of independent study in Medical Informatics.
+The software was fully developed in C++ using modern programming techniques.
