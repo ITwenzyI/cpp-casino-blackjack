@@ -40,15 +40,12 @@ void BlackJack::startplay_bj() {
   std::vector<int> player_cards;
   std::vector<int> dealer_cards;
   int dealer_hand_newcard = 0;
-  int dealer_hand_value = 0;
   int dealer_hand_valueall = 0;
 
   int player_hand_newcard = 0;
-  int player_hand_value = 0;
   int player_hand_valueall = 0;
   string player_choice_nextcard;
   std::string player_name;
-
 
   cout << "Gebe deinen Benutzernamen ein:" << endl;
   cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // WICHTIG!
