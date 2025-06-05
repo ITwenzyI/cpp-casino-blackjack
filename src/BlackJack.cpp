@@ -77,13 +77,21 @@ void BlackJack::startplay_bj() {
   // -------------------------------------------------------------
 
   cout << player_name << "s aktuelle optische Hand:" << endl;
-  player_hand_newcard = random_number(2, 14);
-  player_cards.push_back(player_hand_newcard);
+  for (int i = 0; i < 2; ++i) {
+    player_hand_newcard = random_number(2, 14);
+    player_cards.push_back(player_hand_newcard);
+    build_hand_player(player_hand_newcard);
+  }
   player_hand_valueall = calculate_hand_value(player_cards);
 
-  build_hand_player(player_hand_newcard);
-
   cout << player_name << " aktueller Handwert: " << player_hand_valueall << endl;
+
+  if (player_hand_valueall == 21) {
+    cout << player_name << " hat einen BLACKJACK!" << endl;
+    cout << player_name << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz zurück." << endl;
+    return; // Spiel sofort beenden
+  }
+
 
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
@@ -141,6 +149,8 @@ void BlackJack::startplay_bj() {
   string ende;
   cout << "\n\nBist du zufrieden?" << endl;
   cin >> ende;
+  build_hand_player(0);  // leere Spielerhand
+  build_hand_dealer(0);  // leere Dealerhand
 }
 
 
@@ -214,6 +224,12 @@ int BlackJack::result_game(const int value_player, const int value_dealer) {
 
 void BlackJack::build_hand_player(int value_player) {
   static std::vector<std::pair<std::string, std::string>> builded_hand;
+
+  if (value_player == 0) {
+    builded_hand.clear();
+    return;
+  }
+
   int random_zeichen = random_number(1, 4);
 
   if (random_zeichen == 1) {
@@ -298,6 +314,12 @@ void BlackJack::build_hand_player(int value_player) {
 
 void BlackJack::build_hand_dealer(int value_dealer) {
   static std::vector<std::pair<std::string, std::string>> builded_hand_dealer;
+
+  if (value_dealer == 0) {
+    builded_hand_dealer.clear();
+    return;
+  }
+
   int random_zeichen = random_number(1, 4);
 
   if (random_zeichen == 1) {
