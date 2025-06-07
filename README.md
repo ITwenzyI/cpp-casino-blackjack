@@ -28,7 +28,7 @@ It features a simplified casino-style rule set, full game loop, card drawing vis
 - Structure:
     - `BlackJack.cpp` → Game logic
     - `KartenPrintAusgabe.h/cpp` → Card display
-    - `BigText.h` → ASCII title visuals
+    - `BigText.h` → ASCII title visuals (Not completed)
 
 ---
 
