@@ -1,14 +1,12 @@
-#include "BigText.h"
+#include "util/BigText.hpp"
 #include <iostream>
 #include <map>
 #include <vector>
 #include <cctype>
-
-#include <map>
 #include <string>
-#include <vector>
 
-std::map<char, std::vector<std::string>> bigFont = {
+namespace {
+const std::map<char, std::vector<std::string>> kBigFont = {
     {'A', {
         "    _    ",
         "   / \\   ",
@@ -306,16 +304,18 @@ std::map<char, std::vector<std::string>> bigFont = {
     "       ",
 }},
 };
+} // namespace
 
 void printBigText(const std::string& text) {
-    if (bigFont.empty()) return;
+    if (kBigFont.empty()) return;
 
-    size_t maxLines = bigFont.begin()->second.size();
+    size_t maxLines = kBigFont.begin()->second.size();
     for (size_t line = 0; line < maxLines; ++line) {
         for (char c : text) {
             c = std::toupper(c);
-            if (bigFont.find(c) != bigFont.end()) {
-                std::cout << bigFont[c][line] << " ";
+            const auto it = kBigFont.find(c);
+            if (it != kBigFont.end()) {
+                std::cout << it->second[line] << " ";
             } else {
                 std::cout << "???????? " << " "; // Platzhalter
             }

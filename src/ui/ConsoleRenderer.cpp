@@ -2,7 +2,7 @@
 // Created by Kilian on 13.05.25.
 //
 
-#include "KartenPrintAusgabe.h"
+#include "ui/ConsoleRenderer.hpp"
 #include <iostream>
 
 /*
@@ -20,7 +20,7 @@ KartenPrintAusgabe printer;
 */
 
 // Einzelkarte offen
-std::vector<std::string> KartenPrintAusgabe::getCardLines(const std::string& rank, const std::string& suit) const {
+std::vector<std::string> ConsoleRenderer::getCardLines(const std::string& rank, const std::string& suit) const {
   std::vector<std::string> card(7);
   card[0] = "┌─────────┐";
   card[1] = "│ " + rank + (rank.size() == 1 ? "       " : "      ") + "│";
@@ -33,7 +33,7 @@ std::vector<std::string> KartenPrintAusgabe::getCardLines(const std::string& ran
 }
 
 // Einzelkarte verdeckt
-std::vector<std::string> KartenPrintAusgabe::getVerdeckteKarte() const {
+std::vector<std::string> ConsoleRenderer::getVerdeckteKarte() const {
   return {
     "┌─────────┐",
     "│░░░░░░░░░│",
@@ -46,7 +46,7 @@ std::vector<std::string> KartenPrintAusgabe::getVerdeckteKarte() const {
 }
 
 // Neue Version von printCards mit verdeckten Karten
-void KartenPrintAusgabe::printCards(const std::vector<std::pair<std::string, std::string>>& cards, int verdeckteAnzahl) const {
+void ConsoleRenderer::printCards(const std::vector<std::pair<std::string, std::string>>& cards, int verdeckteAnzahl) const {
   std::vector<std::vector<std::string>> allCardLines;
 
   // Offene Karten
@@ -70,7 +70,7 @@ void KartenPrintAusgabe::printCards(const std::vector<std::pair<std::string, std
 
 
 // Verdeckte Karten ausgeben
-void KartenPrintAusgabe::printVerdeckteKarten(int anzahl) const {
+void ConsoleRenderer::printVerdeckteKarten(int anzahl) const {
   std::vector<std::vector<std::string>> allCards;
   for (int i = 0; i < anzahl; ++i) {
     allCards.push_back(getVerdeckteKarte());
