@@ -6,7 +6,7 @@
 #include <vector>
 #include "BlackJack.h"
 #include "KartenPrintAusgabe.h"
-#include "BigText.h"
+#include "util/BigText.hpp"
 #include "limits"
 #include <chrono>
 #include <thread>

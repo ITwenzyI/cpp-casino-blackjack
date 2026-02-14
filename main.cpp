@@ -7,7 +7,7 @@
 
 //Header Includes:
 #include "include/BlackJack.h"
-#include "include/BigText.h"
+#include "util/BigText.hpp"
 
 
 using namespace std;
