@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "BlackJack.h"
-#include "KartenPrintAusgabe.h"
+#include "ui/ConsoleRenderer.hpp"
 #include "util/BigText.hpp"
 #include "limits"
 #include <chrono>
@@ -36,7 +36,7 @@ void BlackJack::mainmenu_bj() {
 
 
 void BlackJack::startplay_bj() {
-  KartenPrintAusgabe printer;
+  ConsoleRenderer renderer;
   std::vector<int> player_cards;
   std::vector<int> dealer_cards;
   int dealer_hand_newcard = 0;
@@ -57,7 +57,7 @@ void BlackJack::startplay_bj() {
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
   cout << "Dealers beginn Hand:" << endl;
-  printer.printVerdeckteKarten(1);
+  renderer.printVerdeckteKarten(1);
   std::this_thread::sleep_for(std::chrono::seconds(1));
   std::this_thread::sleep_for(std::chrono::seconds(1));
   cout << "Dealers aktuelle optische Hand:" << endl;
@@ -395,8 +395,8 @@ void BlackJack::build_hand_dealer(int value_dealer) {
 
 
 void BlackJack::print_hand(const std::vector<std::pair<std::string, std::string>> &hand) {
-  KartenPrintAusgabe printer;
-  printer.printCards(hand);
+  ConsoleRenderer renderer;
+  renderer.printCards(hand);
 }
 
 int BlackJack::calculate_hand_value(const std::vector<int>& cards) {
@@ -478,7 +478,7 @@ void BlackJack::rules_bj() {
 }
 
 void BlackJack::printexample_bj() {
-  KartenPrintAusgabe printer;
+  ConsoleRenderer renderer;
   //Verfügbare Karten: 2-10 A(1 oder 11), J(Bube), K(König), D(Dame)
   //Verfügbare Zeichen: ♠ ♥ ♦ ♣
   std::vector<std::pair<std::string, std::string>> hand = {
@@ -491,6 +491,6 @@ void BlackJack::printexample_bj() {
    // {"7", "♣"}
 };
 
-  printer.printCards(hand, 1);
+  renderer.printCards(hand, 1);
   //printer.printVerdeckteKarten(2);
 }

@@ -2,12 +2,12 @@
 // Created by Kilian on 13.05.25.
 //
 
-#ifndef KARTENPRINTAUSGABE_H
-#define KARTENPRINTAUSGABE_H
+#ifndef CONSOLE_RENDERER_HPP
+#define CONSOLE_RENDERER_HPP
 #include <string>
 #include <vector>
 
-class KartenPrintAusgabe {
+class ConsoleRenderer {
 public:
     void printCards(const std::vector<std::pair<std::string, std::string>>& cards, int verdeckteAnzahl = 0) const;
     void printVerdeckteKarten(int anzahl) const;
@@ -17,4 +17,4 @@ private:
     std::vector<std::string> getVerdeckteKarte() const;
 };
 
-#endif //KARTENPRINTAUSGABE_H
+#endif //CONSOLE_RENDERER_HPP
