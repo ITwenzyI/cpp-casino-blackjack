@@ -1,8 +1,8 @@
 // Created by Kilian
 #include <windows.h>
 
-#include <iostream>
 #include "game/BlackjackGame.hpp"
+#include <iostream>
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
