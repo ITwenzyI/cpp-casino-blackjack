@@ -1,29 +1,38 @@
 //
 // Created by Kilian on 13.05.25.
 //
+#include <algorithm>
+#include <chrono>
+#include <cctype>
 #include <iostream>
+#include <limits>
 #include <string>
+#include <thread>
 #include <vector>
+
 #include "BlackJack.h"
 #include "ui/ConsoleRenderer.hpp"
 #include "util/BigText.hpp"
-#include "limits"
-#include <chrono>
-#include <thread>
-#include <random>
-#include <cctype>    // für std::tolower
-#include <algorithm> // für std::transform
-
 
 using namespace std;
+
+namespace {
 int usless_choice;
+std::vector<std::pair<std::string, std::string>> g_playerRenderedHand;
+std::vector<std::pair<std::string, std::string>> g_dealerRenderedHand;
+
+std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
+  return {card.rankText(), card.suitText()};
+}
+}
+
 void BlackJack::mainmenu_bj() {
   int choice;
   printBigText("BlackJack");
-  std::cout << "|====| Main Menü|====|" << std::endl;
+  std::cout << "|====| Main Menue|====|" << std::endl;
   cout << "1. Spiel starten" << endl;
   cout << "2. Regeln" << endl;
-  cout << "3. Zurück" << endl;
+  cout << "3. Zurueck" << endl;
   cin >> choice;
 
   switch (choice) {
@@ -34,21 +43,18 @@ void BlackJack::mainmenu_bj() {
   }
 }
 
-
 void BlackJack::startplay_bj() {
   ConsoleRenderer renderer;
-  std::vector<int> player_cards;
-  std::vector<int> dealer_cards;
-  int dealer_hand_newcard = 0;
-  int dealer_hand_valueall = 0;
+  domain::Deck deck;
+  domain::Hand player_hand;
+  domain::Hand dealer_hand;
 
-  int player_hand_newcard = 0;
+  int dealer_hand_valueall = 0;
   int player_hand_valueall = 0;
-  string player_choice_nextcard;
   std::string player_name;
 
   cout << "Gebe deinen Benutzernamen ein:" << endl;
-  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // WICHTIG!
+  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   getline(cin, player_name);
 
   cout << "Willkommen in Blackjack " << player_name << endl;
@@ -56,50 +62,47 @@ void BlackJack::startplay_bj() {
   cout << "Das Spiel startet..." << endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
+  deck.shuffle();
+  clear_rendered_hands();
+
   cout << "Dealers beginn Hand:" << endl;
   renderer.printVerdeckteKarten(1);
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  cout << "Dealers aktuelle optische Hand:" << endl;
-  dealer_hand_newcard = random_number(2, 14);
-  dealer_cards.push_back(dealer_hand_newcard);
-  dealer_hand_valueall = calculate_hand_value(dealer_cards);
+  std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  build_hand_dealer(dealer_hand_newcard);
+  cout << "Dealers aktuelle optische Hand:" << endl;
+  const domain::Card dealer_start_card = deck.draw();
+  dealer_hand.addCard(dealer_start_card);
+  dealer_hand_valueall = dealer_hand.value();
+
+  build_hand_dealer(dealer_start_card);
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
 
   cout << "----------------------------------------------------------" << endl;
 
-  //---------------------------------------------------------------
-  // Spieler //
-  // -------------------------------------------------------------
-
   cout << player_name << "s aktuelle optische Hand:" << endl;
   for (int i = 0; i < 2; ++i) {
-    player_hand_newcard = random_number(2, 14);
-    player_cards.push_back(player_hand_newcard);
-    build_hand_player(player_hand_newcard);
+    const domain::Card player_card = deck.draw();
+    player_hand.addCard(player_card);
+    build_hand_player(player_card);
   }
-  player_hand_valueall = calculate_hand_value(player_cards);
+  player_hand_valueall = player_hand.value();
 
   cout << player_name << " aktueller Handwert: " << player_hand_valueall << endl;
 
   if (player_hand_valueall == 21) {
     cout << player_name << " hat einen BLACKJACK!" << endl;
-    cout << player_name << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz zurück." << endl;
-    return; // Spiel sofort beenden
+    cout << player_name << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz zurueck." << endl;
+    return;
   }
-
 
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
   bool weiter = true;
   while (weiter && player_hand_valueall < 21) {
-    weiter = nextcard_player(player_cards, player_name, dealer_hand_valueall, player_hand_valueall);
+    weiter = nextcard_player(player_hand, deck, player_name, dealer_hand_valueall, player_hand_valueall);
   }
-
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -107,39 +110,47 @@ void BlackJack::startplay_bj() {
     cout << "----------------------------------------------------------" << endl;
     cout << "Dealers aktuelle optische Hand:" << endl;
 
-    dealer_hand_newcard = random_number(2, 14);
-    dealer_cards.push_back(dealer_hand_newcard);
-    dealer_hand_valueall = calculate_hand_value(dealer_cards);
+    const domain::Card dealer_new_card = deck.draw();
+    dealer_hand.addCard(dealer_new_card);
+    dealer_hand_valueall = dealer_hand.value();
 
-    build_hand_dealer(dealer_hand_newcard);
+    build_hand_dealer(dealer_new_card);
     cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
 
     if (dealer_hand_valueall >= 17) {
-      cout << "Keine Karte mehr für Dealer!" << endl;
+      cout << "Keine Karte mehr fuer Dealer!" << endl;
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 
-
   switch (result_game(player_hand_valueall, dealer_hand_valueall)) {
-    case 1: cout << "\nDer Dealer hat gewonnen mit: " << dealer_hand_valueall << " Punkten!" << endl;
-    cout << player_name << " verliert seinen Einsatz leider." << endl;
-    cout << "Beim nächsten mal wird es der Gewinn!" << endl;
-    break;
-    case 2: cout << "\n" << player_name << " hat gewonnen mit: " << player_hand_valueall << " Punkten!" << endl;
-    cout << player_name << " bekommt seinen Einsatz 2x zurück." << endl;
-    cout << "Glückwunsch zum Sieg!!!" << endl;
-    break;
-    case 3: cout << "\n" << player_name << " und der Dealer haben beide über 21 Punkte!" << endl;
-    cout << "Somit gewinnt niemand und " << player_name << " verliert seinen Einsatz!" << endl;
-    cout << "Beim nächsten mal wird es der Gewinn!" << endl;
-    break;
-    case 4: cout << "\n" << "Unentschieden zwischen " << player_name << " und dem Dealer mit jeweils " << player_hand_valueall << " Punkten!" << endl;
-    cout << player_name << " bekommt seinen Einsatz zurück." << endl;
-    cout << "Glückwunsch zum Unentschieden!" << endl;
-    break;
-    default: cerr << "\n" << "Fehler!" << endl; break;
+    case 1:
+      cout << "\nDer Dealer hat gewonnen mit: " << dealer_hand_valueall << " Punkten!" << endl;
+      cout << player_name << " verliert seinen Einsatz leider." << endl;
+      cout << "Beim naechsten mal wird es der Gewinn!" << endl;
+      break;
+    case 2:
+      cout << "\n" << player_name << " hat gewonnen mit: " << player_hand_valueall << " Punkten!" << endl;
+      cout << player_name << " bekommt seinen Einsatz 2x zurueck." << endl;
+      cout << "Glueckwunsch zum Sieg!!!" << endl;
+      break;
+    case 3:
+      cout << "\n" << player_name << " und der Dealer haben beide ueber 21 Punkte!" << endl;
+      cout << "Somit gewinnt niemand und " << player_name << " verliert seinen Einsatz!" << endl;
+      cout << "Beim naechsten mal wird es der Gewinn!" << endl;
+      break;
+    case 4:
+      cout << "\n"
+           << "Unentschieden zwischen " << player_name << " und dem Dealer mit jeweils " << player_hand_valueall << " Punkten!"
+           << endl;
+      cout << player_name << " bekommt seinen Einsatz zurueck." << endl;
+      cout << "Glueckwunsch zum Unentschieden!" << endl;
+      break;
+    default:
+      cerr << "\n"
+           << "Fehler!" << endl;
+      break;
   }
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -147,28 +158,29 @@ void BlackJack::startplay_bj() {
   string ende;
   cout << "\n\nBist du zufrieden?" << endl;
   cin >> ende;
-  build_hand_player(0);  // leere Spielerhand
-  build_hand_dealer(0);  // leere Dealerhand
+  clear_rendered_hands();
 }
 
-
-bool BlackJack::nextcard_player(std::vector<int>& player_cards, const string& player_name, int dealer_hand_valueall, int& player_hand_valueall) {
+bool BlackJack::nextcard_player(domain::Hand& player_hand,
+                                domain::Deck& deck,
+                                const string& player_name,
+                                const int dealer_hand_valueall,
+                                int& player_hand_valueall) {
   string player_choice_nextcard;
-  int player_hand_newcard = 0;
 
-  cout << "Möchtest du noch eine Karte nehmen (Ja oder Nein)?" << endl;
+  cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << endl;
   cin >> player_choice_nextcard;
   cout << "----------------------------------------------------------" << endl;
 
   transform(player_choice_nextcard.begin(), player_choice_nextcard.end(), player_choice_nextcard.begin(), ::tolower);
   if (player_choice_nextcard != "ja") {
-    return false; // Spieler möchte keine Karte
+    return false;
   }
 
-  player_hand_newcard = random_number(2, 14);
-  player_cards.push_back(player_hand_newcard);
+  const domain::Card player_hand_newcard = deck.draw();
+  player_hand.addCard(player_hand_newcard);
 
-  player_hand_valueall = calculate_hand_value(player_cards);
+  player_hand_valueall = player_hand.value();
 
   cout << player_name << "s aktueller Handwert: " << player_hand_valueall << endl;
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
@@ -177,279 +189,82 @@ bool BlackJack::nextcard_player(std::vector<int>& player_cards, const string& pl
   build_hand_player(player_hand_newcard);
 
   if (player_hand_valueall > 21) {
-    cout << player_name << " ... Du bist leider über 21..." << endl;
+    cout << player_name << " ... Du bist leider ueber 21..." << endl;
   }
 
-  return true; // Spieler hat eine Karte genommen
+  return true;
 }
-
-
 
 int BlackJack::result_game(const int value_player, const int value_dealer) {
   cout << "----------------------------------------------------------" << endl;
-  if(value_dealer < 0 || value_player < 0) {
+  if (value_dealer < 0 || value_player < 0) {
     return 0;
   }
-  // Dealer über 21 → Spieler gewinnt
-  if (value_dealer > 21 && value_player <= 21)
+  if (value_dealer > 21 && value_player <= 21) {
     return 2;
+  }
 
-  // Spieler über 21 → Dealer gewinnt
-  if (value_player > 21 && value_dealer <= 21)
+  if (value_player > 21 && value_dealer <= 21) {
     return 1;
+  }
 
-  // Beide über 21 → Niemand gewinnt
-  if (value_player > 21 && value_dealer > 21)
+  if (value_player > 21 && value_dealer > 21) {
     return 3;
+  }
 
-  // Gleichstand
-  if (value_player == value_dealer)
+  if (value_player == value_dealer) {
     return 4;
+  }
 
-  // Wer näher an 21 ist, gewinnt
-  if (value_player > value_dealer)
-    return 2; // Spieler gewinnt
-  else
-    return 1; // Dealer gewinnt
-
+  if (value_player > value_dealer) {
+    return 2;
+  }
+  return 1;
 }
 
-
-void BlackJack::build_hand_player(int value_player) {
-  static std::vector<std::pair<std::string, std::string>> builded_hand;
-
-  if (value_player == 0) {
-    builded_hand.clear();
-    return;
-  }
-
-  int random_zeichen = random_number(1, 4);
-
-  if (random_zeichen == 1) {
-    switch (value_player) {
-      case 2: builded_hand.emplace_back("2", "♠"); break;
-      case 3: builded_hand.emplace_back("3", "♠"); break;
-      case 4: builded_hand.emplace_back("4", "♠"); break;
-      case 5: builded_hand.emplace_back("5", "♠"); break;
-      case 6: builded_hand.emplace_back("6", "♠"); break;
-      case 7: builded_hand.emplace_back("7", "♠"); break;
-      case 8: builded_hand.emplace_back("8", "♠"); break;
-      case 9: builded_hand.emplace_back("9", "♠"); break;
-      case 10: builded_hand.emplace_back("10", "♠"); break;
-      case 11: builded_hand.emplace_back("K", "♠"); break;
-      case 12: builded_hand.emplace_back("D", "♠"); break;
-      case 13: builded_hand.emplace_back("J", "♠"); break;
-      case 14: builded_hand.emplace_back("A", "♠"); break;
-      default: builded_hand.emplace_back("F", "♠"); break;
-    }
-  }
-
-  if (random_zeichen == 2) {
-    switch (value_player) {
-      case 2: builded_hand.emplace_back("2", "♥"); break;
-      case 3: builded_hand.emplace_back("3", "♥"); break;
-      case 4: builded_hand.emplace_back("4", "♥"); break;
-      case 5: builded_hand.emplace_back("5", "♥"); break;
-      case 6: builded_hand.emplace_back("6", "♥"); break;
-      case 7: builded_hand.emplace_back("7", "♥"); break;
-      case 8: builded_hand.emplace_back("8", "♥"); break;
-      case 9: builded_hand.emplace_back("9", "♥"); break;
-      case 10: builded_hand.emplace_back("10", "♥"); break;
-      case 11: builded_hand.emplace_back("K", "♥"); break;
-      case 12: builded_hand.emplace_back("D", "♥"); break;
-      case 13: builded_hand.emplace_back("J", "♥"); break;
-      case 14: builded_hand.emplace_back("A", "♥"); break;
-      default: builded_hand.emplace_back("F", "♥"); break;
-    }
-  }
-
-  if (random_zeichen == 3) {
-    switch (value_player) {
-      case 2: builded_hand.emplace_back("2", "♦"); break;
-      case 3: builded_hand.emplace_back("3", "♦"); break;
-      case 4: builded_hand.emplace_back("4", "♦"); break;
-      case 5: builded_hand.emplace_back("5", "♦"); break;
-      case 6: builded_hand.emplace_back("6", "♦"); break;
-      case 7: builded_hand.emplace_back("7", "♦"); break;
-      case 8: builded_hand.emplace_back("8", "♦"); break;
-      case 9: builded_hand.emplace_back("9", "♦"); break;
-      case 10: builded_hand.emplace_back("10", "♦"); break;
-      case 11: builded_hand.emplace_back("K", "♦"); break;
-      case 12: builded_hand.emplace_back("D", "♦"); break;
-      case 13: builded_hand.emplace_back("J", "♦"); break;
-      case 14: builded_hand.emplace_back("A", "♦"); break;
-      default: builded_hand.emplace_back("F", "♦"); break;
-    }
-  }
-
-  if (random_zeichen == 4) {
-    switch (value_player) {
-      case 2: builded_hand.emplace_back("2", "♣"); break;
-      case 3: builded_hand.emplace_back("3", "♣"); break;
-      case 4: builded_hand.emplace_back("4", "♣"); break;
-      case 5: builded_hand.emplace_back("5", "♣"); break;
-      case 6: builded_hand.emplace_back("6", "♣"); break;
-      case 7: builded_hand.emplace_back("7", "♣"); break;
-      case 8: builded_hand.emplace_back("8", "♣"); break;
-      case 9: builded_hand.emplace_back("9", "♣"); break;
-      case 10: builded_hand.emplace_back("10", "♣"); break;
-      case 11: builded_hand.emplace_back("K", "♣"); break;
-      case 12: builded_hand.emplace_back("D", "♣"); break;
-      case 13: builded_hand.emplace_back("J", "♣"); break;
-      case 14: builded_hand.emplace_back("A", "♣"); break;
-      default: builded_hand.emplace_back("F", "♣"); break;
-    }
-  }
-
-
-  print_hand(builded_hand);
-}
-
-void BlackJack::build_hand_dealer(int value_dealer) {
-  static std::vector<std::pair<std::string, std::string>> builded_hand_dealer;
-
-  if (value_dealer == 0) {
-    builded_hand_dealer.clear();
-    return;
-  }
-
-  int random_zeichen = random_number(1, 4);
-
-  if (random_zeichen == 1) {
-    switch (value_dealer) {
-      case 2: builded_hand_dealer.emplace_back("2", "♠"); break;
-      case 3: builded_hand_dealer.emplace_back("3", "♠"); break;
-      case 4: builded_hand_dealer.emplace_back("4", "♠"); break;
-      case 5: builded_hand_dealer.emplace_back("5", "♠"); break;
-      case 6: builded_hand_dealer.emplace_back("6", "♠"); break;
-      case 7: builded_hand_dealer.emplace_back("7", "♠"); break;
-      case 8: builded_hand_dealer.emplace_back("8", "♠"); break;
-      case 9: builded_hand_dealer.emplace_back("9", "♠"); break;
-      case 10: builded_hand_dealer.emplace_back("10", "♠"); break;
-      case 11: builded_hand_dealer.emplace_back("K", "♠"); break;
-      case 12: builded_hand_dealer.emplace_back("D", "♠"); break;
-      case 13: builded_hand_dealer.emplace_back("J", "♠"); break;
-      case 14: builded_hand_dealer.emplace_back("A", "♠"); break;
-      default: builded_hand_dealer.emplace_back("F", "♠"); break;
-    }
-  }
-
-  if (random_zeichen == 2) {
-    switch (value_dealer) {
-      case 2: builded_hand_dealer.emplace_back("2", "♥"); break;
-      case 3: builded_hand_dealer.emplace_back("3", "♥"); break;
-      case 4: builded_hand_dealer.emplace_back("4", "♥"); break;
-      case 5: builded_hand_dealer.emplace_back("5", "♥"); break;
-      case 6: builded_hand_dealer.emplace_back("6", "♥"); break;
-      case 7: builded_hand_dealer.emplace_back("7", "♥"); break;
-      case 8: builded_hand_dealer.emplace_back("8", "♥"); break;
-      case 9: builded_hand_dealer.emplace_back("9", "♥"); break;
-      case 10: builded_hand_dealer.emplace_back("10", "♥"); break;
-      case 11: builded_hand_dealer.emplace_back("K", "♥"); break;
-      case 12: builded_hand_dealer.emplace_back("D", "♥"); break;
-      case 13: builded_hand_dealer.emplace_back("J", "♥"); break;
-      case 14: builded_hand_dealer.emplace_back("A", "♥"); break;
-      default: builded_hand_dealer.emplace_back("F", "♥"); break;
-    }
-  }
-
-  if (random_zeichen == 3) {
-    switch (value_dealer) {
-      case 2: builded_hand_dealer.emplace_back("2", "♦"); break;
-      case 3: builded_hand_dealer.emplace_back("3", "♦"); break;
-      case 4: builded_hand_dealer.emplace_back("4", "♦"); break;
-      case 5: builded_hand_dealer.emplace_back("5", "♦"); break;
-      case 6: builded_hand_dealer.emplace_back("6", "♦"); break;
-      case 7: builded_hand_dealer.emplace_back("7", "♦"); break;
-      case 8: builded_hand_dealer.emplace_back("8", "♦"); break;
-      case 9: builded_hand_dealer.emplace_back("9", "♦"); break;
-      case 10: builded_hand_dealer.emplace_back("10", "♦"); break;
-      case 11: builded_hand_dealer.emplace_back("K", "♦"); break;
-      case 12: builded_hand_dealer.emplace_back("D", "♦"); break;
-      case 13: builded_hand_dealer.emplace_back("J", "♦"); break;
-      case 14: builded_hand_dealer.emplace_back("A", "♦"); break;
-      default: builded_hand_dealer.emplace_back("F", "♦"); break;
-    }
-  }
-
-  if (random_zeichen == 4) {
-    switch (value_dealer) {
-      case 2: builded_hand_dealer.emplace_back("2", "♣"); break;
-      case 3: builded_hand_dealer.emplace_back("3", "♣"); break;
-      case 4: builded_hand_dealer.emplace_back("4", "♣"); break;
-      case 5: builded_hand_dealer.emplace_back("5", "♣"); break;
-      case 6: builded_hand_dealer.emplace_back("6", "♣"); break;
-      case 7: builded_hand_dealer.emplace_back("7", "♣"); break;
-      case 8: builded_hand_dealer.emplace_back("8", "♣"); break;
-      case 9: builded_hand_dealer.emplace_back("9", "♣"); break;
-      case 10: builded_hand_dealer.emplace_back("10", "♣"); break;
-      case 11: builded_hand_dealer.emplace_back("K", "♣"); break;
-      case 12: builded_hand_dealer.emplace_back("D", "♣"); break;
-      case 13: builded_hand_dealer.emplace_back("J", "♣"); break;
-      case 14: builded_hand_dealer.emplace_back("A", "♣"); break;
-      default: builded_hand_dealer.emplace_back("F", "♣"); break;
-    }
-  }
-  print_hand(builded_hand_dealer);
-}
-
-
-void BlackJack::print_hand(const std::vector<std::pair<std::string, std::string>> &hand) {
+void BlackJack::build_hand_player(const domain::Card& card) {
+  g_playerRenderedHand.push_back(toPrintableCard(card));
   ConsoleRenderer renderer;
-  renderer.printCards(hand);
+  renderer.printCards(g_playerRenderedHand);
 }
 
-int BlackJack::calculate_hand_value(const std::vector<int>& cards) {
-  int total = 0;
-  int aces = 0; // asses aber besser
+void BlackJack::build_hand_dealer(const domain::Card& card) {
+  g_dealerRenderedHand.push_back(toPrintableCard(card));
+  ConsoleRenderer renderer;
+  renderer.printCards(g_dealerRenderedHand);
+}
 
-  for (int card : cards) {
-    if (card == 14) {
-      total += 11;
-      aces++;
-    } else if (card > 10) {
-      total += 10;
-    } else {
-      total += card;
-    }
+void BlackJack::print_hand(const domain::Hand& hand) {
+  std::vector<std::pair<std::string, std::string>> cards;
+  for (const domain::Card& card : hand.cards()) {
+    cards.push_back(toPrintableCard(card));
   }
 
-  while (total > 21 && aces > 0) {
-    total -= 10; // Zähle ein Ass als 1 statt 11
-    aces--;
-  }
-
-  return total;
+  ConsoleRenderer renderer;
+  renderer.printCards(cards);
 }
 
-
-
-int BlackJack::random_number(int anfang, int ende) {
-  std::random_device rd;                              // Zufallsquelle
-  std::mt19937 gen(rd());                             // Mersenne Twister Generator
-  std::uniform_int_distribution<> dist(anfang, ende);        // Gleichverteilung von Anfang bis Ende
-  int zufallszahl = dist(gen);
-
-  return zufallszahl;
+void BlackJack::clear_rendered_hands() {
+  g_playerRenderedHand.clear();
+  g_dealerRenderedHand.clear();
 }
-
 
 void BlackJack::rules_bj() {
   printBigText("Regeln BJ");
   std::cout << "|====| Allgemeines Ziel |====|" << std::endl;
-  std::cout << "1. Ziel des Spiels ist es, so nah wie möglich an 21 Punkte zu kommen." << std::endl;
+  std::cout << "1. Ziel des Spiels ist es, so nah wie moeglich an 21 Punkte zu kommen." << std::endl;
   std::cout << "2. Wer mehr als 21 Punkte hat, verliert automatisch (Bust)." << std::endl;
 
   std::cout << std::endl << "|====| Kartenwerte |====|" << std::endl;
-  std::cout << "3. Zahlenkarten zählen entsprechend ihrem Zahlenwert (z. B. 2–10)." << std::endl;
-  std::cout << "4. Bube, Dame und König zählen jeweils 10 Punkte." << std::endl;
-  std::cout << "5. Das Ass zählt 1 oder 11 Punkte – je nachdem, was günstiger ist." << std::endl;
+  std::cout << "3. Zahlenkarten zaehlen entsprechend ihrem Zahlenwert (z. B. 2- 10)." << std::endl;
+  std::cout << "4. Bube, Dame und Koenig zaehlen jeweils 10 Punkte." << std::endl;
+  std::cout << "5. Das Ass zaehlt 1 oder 11 Punkte - je nachdem, was guenstiger ist." << std::endl;
 
   std::cout << std::endl << "|====| Spielverlauf |====|" << std::endl;
-  std::cout << "6. Jeder Spieler erhält zu Beginn zwei Karten." << std::endl;
+  std::cout << "6. Jeder Spieler erhaelt zu Beginn zwei Karten." << std::endl;
   std::cout << "7. Der Spieler entscheidet, ob er eine weitere Karte zieht ('Hit') oder keine mehr ('Stand')." << std::endl;
-  std::cout << "8. Das Ziel ist, näher an 21 zu kommen als der Dealer, ohne sie zu überschreiten." << std::endl;
-  std::cout << "9. Ein Blackjack besteht aus Ass + 10er-Karte mit den ersten beiden Karten und schlägt alle anderen Kombinationen." << std::endl;
+  std::cout << "8. Das Ziel ist, naeher an 21 zu kommen als der Dealer, ohne sie zu ueberschreiten." << std::endl;
+  std::cout << "9. Ein Blackjack besteht aus Ass + 10er-Karte mit den ersten beiden Karten und schlaegt alle anderen Kombinationen." << std::endl;
 
   std::cout << std::endl << "|====| Dealer-Regeln |====|" << std::endl;
   std::cout << "10. Der Dealer spielt zuletzt." << std::endl;
@@ -459,18 +274,18 @@ void BlackJack::rules_bj() {
 
   std::cout << std::endl << "|====| Spieler-Optionen |====|" << std::endl;
   std::cout << "14. Double Down: Einsatz verdoppeln und genau eine weitere Karte ziehen." << std::endl;
-  std::cout << "(Nicht verfügbar!) 15. Split: Zwei gleichwertige Karten in zwei Hände aufteilen (mit zusätzlichem Einsatz)." << std::endl;
+  std::cout << "(Nicht verfuegbar!) 15. Split: Zwei gleichwertige Karten in zwei Haende aufteilen (mit zusaetzlichem Einsatz)." << std::endl;
   std::cout << "    - Nach dem Split von Assen ist meist nur eine Karte pro Hand erlaubt." << std::endl;
-  std::cout << "(Nicht verfügbar!) 16. Surrender: In manchen Varianten kann man aufgeben und verliert nur die Hälfte des Einsatzes." << std::endl;
+  std::cout << "(Nicht verfuegbar!) 16. Surrender: In manchen Varianten kann man aufgeben und verliert nur die Haelfte des Einsatzes." << std::endl;
 
   std::cout << std::endl << "|====| Versicherung |====|" << std::endl;
-  std::cout << "17. Wenn der Dealer ein Ass zeigt, kann man eine Versicherung abschließen." << std::endl;
-  std::cout << "    - Die Versicherung kostet die Hälfte des ursprünglichen Einsatzes." << std::endl;
+  std::cout << "17. Wenn der Dealer ein Ass zeigt, kann man eine Versicherung abschliessen." << std::endl;
+  std::cout << "    - Die Versicherung kostet die Haelfte des urspruenglichen Einsatzes." << std::endl;
   std::cout << "    - Hat der Dealer einen Blackjack, zahlt die Versicherung 2:1." << std::endl;
 
   std::cout << std::endl << "|====| Gewinn & Verlust |====|" << std::endl;
-  std::cout << "18. Wer näher an 21 ist als der Dealer, gewinnt und verdoppelt seinen Einsatz." << std::endl;
-  std::cout << "19. Ein Blackjack zahlt mehr Gewinn (3:2 z. B. 15€ Gewinn bei 10 € Einsatz)." << std::endl;
+  std::cout << "18. Wer naeher an 21 ist als der Dealer, gewinnt und verdoppelt seinen Einsatz." << std::endl;
+  std::cout << "19. Ein Blackjack zahlt mehr Gewinn (3:2 z. B. 15 EUR Gewinn bei 10 EUR Einsatz)." << std::endl;
   std::cout << "20. Bei Punktegleichstand bleibt der Einsatz erhalten." << std::endl;
 
   std::cout << "===============================" << std::endl;
@@ -479,18 +294,14 @@ void BlackJack::rules_bj() {
 
 void BlackJack::printexample_bj() {
   ConsoleRenderer renderer;
-  //Verfügbare Karten: 2-10 A(1 oder 11), J(Bube), K(König), D(Dame)
-  //Verfügbare Zeichen: ♠ ♥ ♦ ♣
   std::vector<std::pair<std::string, std::string>> hand = {
-    {"A", "♠"},
-    {"K", "♠"},
-{"D", "♠"},
-{"J", "♠"},
-   // {"10", "♥"},
-    //{"K", "♦"},
-   // {"7", "♣"}
-};
+      {"A", "\xe2\x99\xa0"},
+      {"K", "\xe2\x99\xa0"},
+      {"D", "\xe2\x99\xa0"},
+      {"J", "\xe2\x99\xa0"},
+  };
 
   renderer.printCards(hand, 1);
-  //printer.printVerdeckteKarten(2);
 }
+
+

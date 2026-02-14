@@ -3,6 +3,9 @@
 //
 #include <vector>
 #include <string>
+#include "domain/Card.hpp"
+#include "domain/Deck.hpp"
+#include "domain/Hand.hpp"
 
 #ifndef BLACKJACK_H
 #define BLACKJACK_H
@@ -13,15 +16,13 @@ class BlackJack {
     void startplay_bj();
     void rules_bj();
     static bool check_value_dealer(int value_dealer);
-    bool nextcard_player(std::vector<int>& player_cards, const std::string& player_name, int dealer_hand_valueall, int& player_hand_valueall);
+    bool nextcard_player(domain::Hand& player_hand, domain::Deck& deck, const std::string& player_name, int dealer_hand_valueall, int& player_hand_valueall);
     int result_game(int value_player, int value_dealer);
-    int random_number(int anfang, int ende);
-    void print_hand(const std::vector<std::pair<std::string, std::string>> &hand);
-    void build_hand_player(int value_player);
-    void build_hand_dealer(int value_dealer);
+    void print_hand(const domain::Hand& hand);
+    void build_hand_player(const domain::Card& card);
+    void build_hand_dealer(const domain::Card& card);
+    void clear_rendered_hands();
     void printexample_bj();
-    int calculate_hand_value(const std::vector<int>& cards);
-
 };
 
 #endif //BLACKJACK_H
