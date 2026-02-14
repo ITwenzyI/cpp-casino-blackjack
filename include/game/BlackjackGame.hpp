@@ -12,21 +12,21 @@
 namespace game {
 
 class BlackjackGame {
- public:
-  void run();
+  public:
+    void run();
 
- private:
-  void showBlackjackMenu();
-  void showRules();
-  void playRound();
-  bool nextCardPlayer(BlackjackRound& round, const std::string& playerName, int& playerHandValue);
-  void buildHandPlayer(const domain::Card& card);
-  void buildHandDealer(const domain::Card& card);
-  void clearRenderedHands();
+  private:
+    void showBlackjackMenu();
+    void showRules();
+    void playRound();
+    bool nextCardPlayer(BlackjackRound& round, const std::string& playerName, int& playerHandValue);
+    void buildHandPlayer(const domain::Card& card);
+    void buildHandDealer(const domain::Card& card);
+    void clearRenderedHands();
 
-  std::vector<std::pair<std::string, std::string>> playerRenderedHand_;
-  std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;
-  ConsoleInput input_;
+    std::vector<std::pair<std::string, std::string>> playerRenderedHand_;
+    std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;
+    ConsoleInput input_;
 };
 
 } // namespace game
