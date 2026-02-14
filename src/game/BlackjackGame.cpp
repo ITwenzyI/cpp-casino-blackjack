@@ -7,7 +7,6 @@
 #include <chrono>
 #include <cctype>
 #include <iostream>
-#include <limits>
 #include <thread>
 
 #include "ui/ConsoleRenderer.hpp"
@@ -30,16 +29,16 @@ void BlackjackGame::run() {
     std::cout << "|====| Deluxe Casino |====|" << std::endl;
     std::cout << "1. Spielauswahl" << std::endl;
     std::cout << "Deine Auswahl: " << std::endl;
-    std::cin >> choiceMainMenu;
-    std::cin.ignore();
+    choiceMainMenu = input_.readInt();
+    input_.discardLine();
 
     if (choiceMainMenu == 1) {
       std::cout << "|====| Spielauswahl |====|" << std::endl;
       std::cout << "-|- Karten Spiele -|-" << std::endl;
       std::cout << "1. Blackjack" << std::endl;
       std::cout << "Deine Auswahl: " << std::endl;
-      std::cin >> choiceSpielauswahl;
-      std::cin.ignore();
+      choiceSpielauswahl = input_.readInt();
+      input_.discardLine();
 
       if (choiceSpielauswahl == 1) {
         showBlackjackMenu();
@@ -55,7 +54,7 @@ void BlackjackGame::showBlackjackMenu() {
   std::cout << "1. Spiel starten" << std::endl;
   std::cout << "2. Regeln" << std::endl;
   std::cout << "3. Zurueck" << std::endl;
-  std::cin >> choice;
+  choice = input_.readInt();
 
   switch (choice) {
     case 1: playRound(); break;
@@ -73,8 +72,8 @@ void BlackjackGame::playRound() {
   std::string playerName;
 
   std::cout << "Gebe deinen Benutzernamen ein:" << std::endl;
-  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  std::getline(std::cin, playerName);
+  input_.discardLine();
+  playerName = input_.readLine();
 
   std::cout << "Willkommen in Blackjack " << playerName << std::endl;
   std::cout << "Das Spiel startet..." << std::endl;
@@ -165,7 +164,7 @@ void BlackjackGame::playRound() {
 
   std::string ende;
   std::cout << "\n\nBist du zufrieden?" << std::endl;
-  std::cin >> ende;
+  ende = input_.readWord();
   clearRenderedHands();
 }
 
@@ -173,7 +172,7 @@ bool BlackjackGame::nextCardPlayer(BlackjackRound& round, const std::string& pla
   std::string playerChoiceNextCard;
 
   std::cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << std::endl;
-  std::cin >> playerChoiceNextCard;
+  playerChoiceNextCard = input_.readWord();
   std::cout << "----------------------------------------------------------" << std::endl;
 
   std::transform(
@@ -228,7 +227,7 @@ void BlackjackGame::showRules() {
   std::cout << "13. Wer naeher an 21 ist als der Dealer, gewinnt." << std::endl;
   std::cout << "14. Bei Punktegleichstand bleibt der Einsatz erhalten." << std::endl;
   std::cout << "===============================" << std::endl;
-  std::cin >> uselessChoice;
+  uselessChoice = input_.readInt();
 }
 
 void BlackjackGame::buildHandPlayer(const domain::Card& card) {

@@ -7,8 +7,7 @@
 
 #include "domain/Card.hpp"
 #include "game/BlackjackRound.hpp"
-
-class ConsoleRenderer;
+#include "ui/ConsoleInput.hpp"
 
 namespace game {
 
@@ -27,6 +26,7 @@ class BlackjackGame {
 
   std::vector<std::pair<std::string, std::string>> playerRenderedHand_;
   std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;
+  ConsoleInput input_;
 };
 
 } // namespace game
