@@ -45,9 +45,7 @@ void BlackJack::mainmenu_bj() {
 
 void BlackJack::startplay_bj() {
   ConsoleRenderer renderer;
-  domain::Deck deck;
-  domain::Hand player_hand;
-  domain::Hand dealer_hand;
+  game::BlackjackRound round;
 
   int dealer_hand_valueall = 0;
   int player_hand_valueall = 0;
@@ -62,7 +60,7 @@ void BlackJack::startplay_bj() {
   cout << "Das Spiel startet..." << endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
-  deck.shuffle();
+  round.start();
   clear_rendered_hands();
 
   cout << "Dealers beginn Hand:" << endl;
@@ -70,9 +68,8 @@ void BlackJack::startplay_bj() {
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
   cout << "Dealers aktuelle optische Hand:" << endl;
-  const domain::Card dealer_start_card = deck.draw();
-  dealer_hand.addCard(dealer_start_card);
-  dealer_hand_valueall = dealer_hand.value();
+  const domain::Card dealer_start_card = round.dealerHand().cards().front();
+  dealer_hand_valueall = round.dealerValue();
 
   build_hand_dealer(dealer_start_card);
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
@@ -82,12 +79,10 @@ void BlackJack::startplay_bj() {
   cout << "----------------------------------------------------------" << endl;
 
   cout << player_name << "s aktuelle optische Hand:" << endl;
-  for (int i = 0; i < 2; ++i) {
-    const domain::Card player_card = deck.draw();
-    player_hand.addCard(player_card);
+  for (const domain::Card& player_card : round.playerHand().cards()) {
     build_hand_player(player_card);
   }
-  player_hand_valueall = player_hand.value();
+  player_hand_valueall = round.playerValue();
 
   cout << player_name << " aktueller Handwert: " << player_hand_valueall << endl;
 
@@ -101,30 +96,26 @@ void BlackJack::startplay_bj() {
 
   bool weiter = true;
   while (weiter && player_hand_valueall < 21) {
-    weiter = nextcard_player(player_hand, deck, player_name, dealer_hand_valueall, player_hand_valueall);
+    weiter = nextcard_player(round, player_name, player_hand_valueall);
   }
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  while (dealer_hand_valueall < 17) {
+  const std::vector<domain::Card> dealer_cards = round.playDealerTurn();
+  for (const domain::Card& dealer_new_card : dealer_cards) {
     cout << "----------------------------------------------------------" << endl;
     cout << "Dealers aktuelle optische Hand:" << endl;
-
-    const domain::Card dealer_new_card = deck.draw();
-    dealer_hand.addCard(dealer_new_card);
-    dealer_hand_valueall = dealer_hand.value();
-
     build_hand_dealer(dealer_new_card);
+    dealer_hand_valueall = round.dealerValue();
     cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
-
-    if (dealer_hand_valueall >= 17) {
-      cout << "Keine Karte mehr fuer Dealer!" << endl;
-    }
-
     std::this_thread::sleep_for(std::chrono::seconds(3));
   }
+  dealer_hand_valueall = round.dealerValue();
+  if (dealer_hand_valueall >= 17) {
+    cout << "Keine Karte mehr fuer Dealer!" << endl;
+  }
 
-  switch (result_game(player_hand_valueall, dealer_hand_valueall)) {
+  switch (round.evaluateResult()) {
     case 1:
       cout << "\nDer Dealer hat gewonnen mit: " << dealer_hand_valueall << " Punkten!" << endl;
       cout << player_name << " verliert seinen Einsatz leider." << endl;
@@ -161,11 +152,7 @@ void BlackJack::startplay_bj() {
   clear_rendered_hands();
 }
 
-bool BlackJack::nextcard_player(domain::Hand& player_hand,
-                                domain::Deck& deck,
-                                const string& player_name,
-                                const int dealer_hand_valueall,
-                                int& player_hand_valueall) {
+bool BlackJack::nextcard_player(game::BlackjackRound& round, const string& player_name, int& player_hand_valueall) {
   string player_choice_nextcard;
 
   cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << endl;
@@ -177,10 +164,10 @@ bool BlackJack::nextcard_player(domain::Hand& player_hand,
     return false;
   }
 
-  const domain::Card player_hand_newcard = deck.draw();
-  player_hand.addCard(player_hand_newcard);
+  const domain::Card player_hand_newcard = round.playerHit();
 
-  player_hand_valueall = player_hand.value();
+  player_hand_valueall = round.playerValue();
+  const int dealer_hand_valueall = round.dealerValue();
 
   cout << player_name << "s aktueller Handwert: " << player_hand_valueall << endl;
   cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
