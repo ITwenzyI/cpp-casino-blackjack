@@ -4,11 +4,11 @@
 #include <string>
 
 class ConsoleInput {
- public:
-  int readInt();
-  std::string readWord();
-  std::string readLine();
-  void discardLine();
+  public:
+    int readInt();
+    std::string readWord();
+    std::string readLine();
+    void discardLine();
 };
 
 #endif
