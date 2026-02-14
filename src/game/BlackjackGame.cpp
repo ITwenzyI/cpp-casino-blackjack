@@ -1,249 +1,215 @@
 //
 // Created by Kilian on 13.05.25.
 //
+#include "game/BlackjackGame.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <cctype>
 #include <iostream>
 #include <limits>
-#include <string>
 #include <thread>
-#include <vector>
 
-#include "BlackJack.h"
 #include "ui/ConsoleRenderer.hpp"
 #include "util/BigText.hpp"
 
-using namespace std;
-
 namespace {
-int usless_choice;
-std::vector<std::pair<std::string, std::string>> g_playerRenderedHand;
-std::vector<std::pair<std::string, std::string>> g_dealerRenderedHand;
-
 std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
   return {card.rankText(), card.suitText()};
 }
+} // namespace
+
+namespace game {
+
+void BlackjackGame::run() {
+  int choiceMainMenu = 0;
+  int choiceSpielauswahl = 0;
+
+  do {
+    printBigText("Casino Menu");
+    std::cout << "|====| Deluxe Casino |====|" << std::endl;
+    std::cout << "1. Spielauswahl" << std::endl;
+    std::cout << "Deine Auswahl: " << std::endl;
+    std::cin >> choiceMainMenu;
+    std::cin.ignore();
+
+    if (choiceMainMenu == 1) {
+      std::cout << "|====| Spielauswahl |====|" << std::endl;
+      std::cout << "-|- Karten Spiele -|-" << std::endl;
+      std::cout << "1. Blackjack" << std::endl;
+      std::cout << "Deine Auswahl: " << std::endl;
+      std::cin >> choiceSpielauswahl;
+      std::cin.ignore();
+
+      if (choiceSpielauswahl == 1) {
+        showBlackjackMenu();
+      }
+    }
+  } while (choiceMainMenu == 1);
 }
 
-void BlackJack::mainmenu_bj() {
+void BlackjackGame::showBlackjackMenu() {
   int choice;
   printBigText("BlackJack");
   std::cout << "|====| Main Menue|====|" << std::endl;
-  cout << "1. Spiel starten" << endl;
-  cout << "2. Regeln" << endl;
-  cout << "3. Zurueck" << endl;
-  cin >> choice;
+  std::cout << "1. Spiel starten" << std::endl;
+  std::cout << "2. Regeln" << std::endl;
+  std::cout << "3. Zurueck" << std::endl;
+  std::cin >> choice;
 
   switch (choice) {
-    case 1: startplay_bj(); break;
-    case 2: rules_bj(); break;
+    case 1: playRound(); break;
+    case 2: showRules(); break;
     case 3: return;
-    default: cout << "Invalid choice" << endl; break;
+    default: std::cout << "Invalid choice" << std::endl; break;
   }
 }
 
-void BlackJack::startplay_bj() {
+void BlackjackGame::playRound() {
   ConsoleRenderer renderer;
-  game::BlackjackRound round;
+  BlackjackRound round;
+  int dealerHandValue = 0;
+  int playerHandValue = 0;
+  std::string playerName;
 
-  int dealer_hand_valueall = 0;
-  int player_hand_valueall = 0;
-  std::string player_name;
+  std::cout << "Gebe deinen Benutzernamen ein:" << std::endl;
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  std::getline(std::cin, playerName);
 
-  cout << "Gebe deinen Benutzernamen ein:" << endl;
-  cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  getline(cin, player_name);
-
-  cout << "Willkommen in Blackjack " << player_name << endl;
-
-  cout << "Das Spiel startet..." << endl;
+  std::cout << "Willkommen in Blackjack " << playerName << std::endl;
+  std::cout << "Das Spiel startet..." << std::endl;
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
   round.start();
-  clear_rendered_hands();
+  clearRenderedHands();
 
-  cout << "Dealers beginn Hand:" << endl;
+  std::cout << "Dealers beginn Hand:" << std::endl;
   renderer.printVerdeckteKarten(1);
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  cout << "Dealers aktuelle optische Hand:" << endl;
-  const domain::Card dealer_start_card = round.dealerHand().cards().front();
-  dealer_hand_valueall = round.dealerValue();
-
-  build_hand_dealer(dealer_start_card);
-  cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
+  std::cout << "Dealers aktuelle optische Hand:" << std::endl;
+  const domain::Card dealerStartCard = round.dealerHand().cards().front();
+  dealerHandValue = round.dealerValue();
+  buildHandDealer(dealerStartCard);
+  std::cout << "Dealers aktueller Handwert: " << dealerHandValue << std::endl;
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
+  std::cout << "----------------------------------------------------------" << std::endl;
 
-  cout << "----------------------------------------------------------" << endl;
-
-  cout << player_name << "s aktuelle optische Hand:" << endl;
-  for (const domain::Card& player_card : round.playerHand().cards()) {
-    build_hand_player(player_card);
+  std::cout << playerName << "s aktuelle optische Hand:" << std::endl;
+  for (const domain::Card& playerCard : round.playerHand().cards()) {
+    buildHandPlayer(playerCard);
   }
-  player_hand_valueall = round.playerValue();
+  playerHandValue = round.playerValue();
 
-  cout << player_name << " aktueller Handwert: " << player_hand_valueall << endl;
+  std::cout << playerName << " aktueller Handwert: " << playerHandValue << std::endl;
 
-  if (player_hand_valueall == 21) {
-    cout << player_name << " hat einen BLACKJACK!" << endl;
-    cout << player_name << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz zurueck." << endl;
+  if (round.playerHasBlackjack()) {
+    std::cout << playerName << " hat einen BLACKJACK!" << std::endl;
+    std::cout << playerName << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz zurueck."
+              << std::endl;
     return;
   }
 
-  cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
+  std::cout << "Dealers aktueller Handwert: " << dealerHandValue << std::endl;
 
   bool weiter = true;
-  while (weiter && player_hand_valueall < 21) {
-    weiter = nextcard_player(round, player_name, player_hand_valueall);
+  while (weiter && playerHandValue < 21) {
+    weiter = nextCardPlayer(round, playerName, playerHandValue);
   }
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  const std::vector<domain::Card> dealer_cards = round.playDealerTurn();
-  for (const domain::Card& dealer_new_card : dealer_cards) {
-    cout << "----------------------------------------------------------" << endl;
-    cout << "Dealers aktuelle optische Hand:" << endl;
-    build_hand_dealer(dealer_new_card);
-    dealer_hand_valueall = round.dealerValue();
-    cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
+  const std::vector<domain::Card> dealerCards = round.playDealerTurn();
+  for (const domain::Card& dealerNewCard : dealerCards) {
+    std::cout << "----------------------------------------------------------" << std::endl;
+    std::cout << "Dealers aktuelle optische Hand:" << std::endl;
+    buildHandDealer(dealerNewCard);
+    dealerHandValue = round.dealerValue();
+    std::cout << "Dealers aktueller Handwert: " << dealerHandValue << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(3));
   }
-  dealer_hand_valueall = round.dealerValue();
-  if (dealer_hand_valueall >= 17) {
-    cout << "Keine Karte mehr fuer Dealer!" << endl;
+  dealerHandValue = round.dealerValue();
+  if (dealerHandValue >= 17) {
+    std::cout << "Keine Karte mehr fuer Dealer!" << std::endl;
   }
 
   switch (round.evaluateResult()) {
     case 1:
-      cout << "\nDer Dealer hat gewonnen mit: " << dealer_hand_valueall << " Punkten!" << endl;
-      cout << player_name << " verliert seinen Einsatz leider." << endl;
-      cout << "Beim naechsten mal wird es der Gewinn!" << endl;
+      std::cout << "\nDer Dealer hat gewonnen mit: " << dealerHandValue << " Punkten!" << std::endl;
+      std::cout << playerName << " verliert seinen Einsatz leider." << std::endl;
+      std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
       break;
     case 2:
-      cout << "\n" << player_name << " hat gewonnen mit: " << player_hand_valueall << " Punkten!" << endl;
-      cout << player_name << " bekommt seinen Einsatz 2x zurueck." << endl;
-      cout << "Glueckwunsch zum Sieg!!!" << endl;
+      std::cout << "\n" << playerName << " hat gewonnen mit: " << playerHandValue << " Punkten!" << std::endl;
+      std::cout << playerName << " bekommt seinen Einsatz 2x zurueck." << std::endl;
+      std::cout << "Glueckwunsch zum Sieg!!!" << std::endl;
       break;
     case 3:
-      cout << "\n" << player_name << " und der Dealer haben beide ueber 21 Punkte!" << endl;
-      cout << "Somit gewinnt niemand und " << player_name << " verliert seinen Einsatz!" << endl;
-      cout << "Beim naechsten mal wird es der Gewinn!" << endl;
+      std::cout << "\n" << playerName << " und der Dealer haben beide ueber 21 Punkte!" << std::endl;
+      std::cout << "Somit gewinnt niemand und " << playerName << " verliert seinen Einsatz!" << std::endl;
+      std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
       break;
     case 4:
-      cout << "\n"
-           << "Unentschieden zwischen " << player_name << " und dem Dealer mit jeweils " << player_hand_valueall << " Punkten!"
-           << endl;
-      cout << player_name << " bekommt seinen Einsatz zurueck." << endl;
-      cout << "Glueckwunsch zum Unentschieden!" << endl;
+      std::cout << "\nUnentschieden zwischen " << playerName << " und dem Dealer mit jeweils " << playerHandValue
+                << " Punkten!" << std::endl;
+      std::cout << playerName << " bekommt seinen Einsatz zurueck." << std::endl;
+      std::cout << "Glueckwunsch zum Unentschieden!" << std::endl;
       break;
     default:
-      cerr << "\n"
-           << "Fehler!" << endl;
+      std::cerr << "\nFehler!" << std::endl;
       break;
   }
 
   std::this_thread::sleep_for(std::chrono::seconds(3));
 
-  string ende;
-  cout << "\n\nBist du zufrieden?" << endl;
-  cin >> ende;
-  clear_rendered_hands();
+  std::string ende;
+  std::cout << "\n\nBist du zufrieden?" << std::endl;
+  std::cin >> ende;
+  clearRenderedHands();
 }
 
-bool BlackJack::nextcard_player(game::BlackjackRound& round, const string& player_name, int& player_hand_valueall) {
-  string player_choice_nextcard;
+bool BlackjackGame::nextCardPlayer(BlackjackRound& round, const std::string& playerName, int& playerHandValue) {
+  std::string playerChoiceNextCard;
 
-  cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << endl;
-  cin >> player_choice_nextcard;
-  cout << "----------------------------------------------------------" << endl;
+  std::cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << std::endl;
+  std::cin >> playerChoiceNextCard;
+  std::cout << "----------------------------------------------------------" << std::endl;
 
-  transform(player_choice_nextcard.begin(), player_choice_nextcard.end(), player_choice_nextcard.begin(), ::tolower);
-  if (player_choice_nextcard != "ja") {
+  std::transform(
+      playerChoiceNextCard.begin(), playerChoiceNextCard.end(), playerChoiceNextCard.begin(), [](unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+      });
+
+  if (playerChoiceNextCard != "ja") {
     return false;
   }
 
-  const domain::Card player_hand_newcard = round.playerHit();
+  const domain::Card playerNewCard = round.playerHit();
+  playerHandValue = round.playerValue();
+  const int dealerHandValue = round.dealerValue();
 
-  player_hand_valueall = round.playerValue();
-  const int dealer_hand_valueall = round.dealerValue();
+  std::cout << playerName << "s aktueller Handwert: " << playerHandValue << std::endl;
+  std::cout << "Dealers aktueller Handwert: " << dealerHandValue << std::endl;
+  std::cout << playerName << "s aktuelle optische Hand:" << std::endl;
+  buildHandPlayer(playerNewCard);
 
-  cout << player_name << "s aktueller Handwert: " << player_hand_valueall << endl;
-  cout << "Dealers aktueller Handwert: " << dealer_hand_valueall << endl;
-
-  cout << player_name << "s aktuelle optische Hand:" << endl;
-  build_hand_player(player_hand_newcard);
-
-  if (player_hand_valueall > 21) {
-    cout << player_name << " ... Du bist leider ueber 21..." << endl;
+  if (playerHandValue > 21) {
+    std::cout << playerName << " ... Du bist leider ueber 21..." << std::endl;
   }
 
   return true;
 }
 
-int BlackJack::result_game(const int value_player, const int value_dealer) {
-  cout << "----------------------------------------------------------" << endl;
-  if (value_dealer < 0 || value_player < 0) {
-    return 0;
-  }
-  if (value_dealer > 21 && value_player <= 21) {
-    return 2;
-  }
-
-  if (value_player > 21 && value_dealer <= 21) {
-    return 1;
-  }
-
-  if (value_player > 21 && value_dealer > 21) {
-    return 3;
-  }
-
-  if (value_player == value_dealer) {
-    return 4;
-  }
-
-  if (value_player > value_dealer) {
-    return 2;
-  }
-  return 1;
-}
-
-void BlackJack::build_hand_player(const domain::Card& card) {
-  g_playerRenderedHand.push_back(toPrintableCard(card));
-  ConsoleRenderer renderer;
-  renderer.printCards(g_playerRenderedHand);
-}
-
-void BlackJack::build_hand_dealer(const domain::Card& card) {
-  g_dealerRenderedHand.push_back(toPrintableCard(card));
-  ConsoleRenderer renderer;
-  renderer.printCards(g_dealerRenderedHand);
-}
-
-void BlackJack::print_hand(const domain::Hand& hand) {
-  std::vector<std::pair<std::string, std::string>> cards;
-  for (const domain::Card& card : hand.cards()) {
-    cards.push_back(toPrintableCard(card));
-  }
-
-  ConsoleRenderer renderer;
-  renderer.printCards(cards);
-}
-
-void BlackJack::clear_rendered_hands() {
-  g_playerRenderedHand.clear();
-  g_dealerRenderedHand.clear();
-}
-
-void BlackJack::rules_bj() {
+void BlackjackGame::showRules() {
+  int uselessChoice = 0;
   printBigText("Regeln BJ");
   std::cout << "|====| Allgemeines Ziel |====|" << std::endl;
   std::cout << "1. Ziel des Spiels ist es, so nah wie moeglich an 21 Punkte zu kommen." << std::endl;
   std::cout << "2. Wer mehr als 21 Punkte hat, verliert automatisch (Bust)." << std::endl;
 
   std::cout << std::endl << "|====| Kartenwerte |====|" << std::endl;
-  std::cout << "3. Zahlenkarten zaehlen entsprechend ihrem Zahlenwert (z. B. 2- 10)." << std::endl;
+  std::cout << "3. Zahlenkarten zaehlen entsprechend ihrem Zahlenwert (z. B. 2-10)." << std::endl;
   std::cout << "4. Bube, Dame und Koenig zaehlen jeweils 10 Punkte." << std::endl;
   std::cout << "5. Das Ass zaehlt 1 oder 11 Punkte - je nachdem, was guenstiger ist." << std::endl;
 
@@ -251,44 +217,37 @@ void BlackJack::rules_bj() {
   std::cout << "6. Jeder Spieler erhaelt zu Beginn zwei Karten." << std::endl;
   std::cout << "7. Der Spieler entscheidet, ob er eine weitere Karte zieht ('Hit') oder keine mehr ('Stand')." << std::endl;
   std::cout << "8. Das Ziel ist, naeher an 21 zu kommen als der Dealer, ohne sie zu ueberschreiten." << std::endl;
-  std::cout << "9. Ein Blackjack besteht aus Ass + 10er-Karte mit den ersten beiden Karten und schlaegt alle anderen Kombinationen." << std::endl;
+  std::cout << "9. Ein Blackjack besteht aus Ass + 10er-Karte mit den ersten beiden Karten." << std::endl;
 
   std::cout << std::endl << "|====| Dealer-Regeln |====|" << std::endl;
   std::cout << "10. Der Dealer spielt zuletzt." << std::endl;
   std::cout << "11. Der Dealer muss bei 16 oder weniger Punkten Karten ziehen." << std::endl;
   std::cout << "12. Der Dealer muss bei 17 oder mehr Punkten stoppen." << std::endl;
-  std::cout << "13. In einigen Varianten zieht der Dealer auch bei 'Soft 17' (z.B Ass + 6)." << std::endl;
-
-  std::cout << std::endl << "|====| Spieler-Optionen |====|" << std::endl;
-  std::cout << "14. Double Down: Einsatz verdoppeln und genau eine weitere Karte ziehen." << std::endl;
-  std::cout << "(Nicht verfuegbar!) 15. Split: Zwei gleichwertige Karten in zwei Haende aufteilen (mit zusaetzlichem Einsatz)." << std::endl;
-  std::cout << "    - Nach dem Split von Assen ist meist nur eine Karte pro Hand erlaubt." << std::endl;
-  std::cout << "(Nicht verfuegbar!) 16. Surrender: In manchen Varianten kann man aufgeben und verliert nur die Haelfte des Einsatzes." << std::endl;
-
-  std::cout << std::endl << "|====| Versicherung |====|" << std::endl;
-  std::cout << "17. Wenn der Dealer ein Ass zeigt, kann man eine Versicherung abschliessen." << std::endl;
-  std::cout << "    - Die Versicherung kostet die Haelfte des urspruenglichen Einsatzes." << std::endl;
-  std::cout << "    - Hat der Dealer einen Blackjack, zahlt die Versicherung 2:1." << std::endl;
 
   std::cout << std::endl << "|====| Gewinn & Verlust |====|" << std::endl;
-  std::cout << "18. Wer naeher an 21 ist als der Dealer, gewinnt und verdoppelt seinen Einsatz." << std::endl;
-  std::cout << "19. Ein Blackjack zahlt mehr Gewinn (3:2 z. B. 15 EUR Gewinn bei 10 EUR Einsatz)." << std::endl;
-  std::cout << "20. Bei Punktegleichstand bleibt der Einsatz erhalten." << std::endl;
-
+  std::cout << "13. Wer naeher an 21 ist als der Dealer, gewinnt." << std::endl;
+  std::cout << "14. Bei Punktegleichstand bleibt der Einsatz erhalten." << std::endl;
   std::cout << "===============================" << std::endl;
-  cin >> usless_choice;
+  std::cin >> uselessChoice;
 }
 
-void BlackJack::printexample_bj() {
+void BlackjackGame::buildHandPlayer(const domain::Card& card) {
+  playerRenderedHand_.push_back(toPrintableCard(card));
   ConsoleRenderer renderer;
-  std::vector<std::pair<std::string, std::string>> hand = {
-      {"A", "\xe2\x99\xa0"},
-      {"K", "\xe2\x99\xa0"},
-      {"D", "\xe2\x99\xa0"},
-      {"J", "\xe2\x99\xa0"},
-  };
-
-  renderer.printCards(hand, 1);
+  renderer.printCards(playerRenderedHand_);
 }
+
+void BlackjackGame::buildHandDealer(const domain::Card& card) {
+  dealerRenderedHand_.push_back(toPrintableCard(card));
+  ConsoleRenderer renderer;
+  renderer.printCards(dealerRenderedHand_);
+}
+
+void BlackjackGame::clearRenderedHands() {
+  playerRenderedHand_.clear();
+  dealerRenderedHand_.clear();
+}
+
+} // namespace game
 
 
