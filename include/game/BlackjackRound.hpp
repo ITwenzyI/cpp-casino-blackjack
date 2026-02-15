@@ -9,9 +9,13 @@ namespace game {
 
 class BlackjackRound {
   public:
+    // Initialisiert eine neue Runde (Deck reset/shuffle, erste Karten verteilen).
     void start();
+    // Spieler zieht eine Karte und erhaelt sie für die UI zurück.
     domain::Card playerHit();
+    // Markiert die Spielerentscheidung "Stand" (aktuell dokumentarisch).
     void playerStand();
+    // Führt Dealer-Zug gemäss Regel "<17 ziehen" aus.
     std::vector<domain::Card> playDealerTurn();
 
     const domain::Hand& playerHand() const;
@@ -19,6 +23,7 @@ class BlackjackRound {
     int playerValue() const;
     int dealerValue() const;
     bool playerHasBlackjack() const;
+    // 1=Dealer gewinnt, 2=Spieler gewinnt, 3=beide bust, 4=Push, 0=Fehlerfall
     int evaluateResult() const;
 
   private:

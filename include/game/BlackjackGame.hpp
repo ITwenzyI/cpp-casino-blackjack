@@ -13,6 +13,7 @@ namespace game {
 
 class BlackjackGame {
   public:
+    // Einstiegspunkt für den kompletten Konsolen-Spielablauf.
     void run();
 
   private:
@@ -26,6 +27,7 @@ class BlackjackGame {
 
     std::vector<std::pair<std::string, std::string>> playerRenderedHand_;
     std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;
+    // Zentraler Input-Adapter, damit Game-Logik kein direktes std::cin nutzt.
     ConsoleInput input_;
 };
 

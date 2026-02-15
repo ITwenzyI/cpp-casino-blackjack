@@ -12,8 +12,11 @@ class Deck {
   public:
     Deck();
 
+    // Baut ein frisches 52er-Deck in definierter Reihenfolge auf.
     void reset();
+    // Mischt das Deck und setzt den Zieh-Index zurück.
     void shuffle();
+    // Zieht die nächste Karte, bei leerem Deck wird automatisch neu gemischt.
     Card draw();
 
   private:
