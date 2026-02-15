@@ -9,6 +9,7 @@ void BlackjackRound::start() {
     deck_.reset();
     deck_.shuffle();
 
+    // Aktuelle Spielvariante: Dealer startet mit 1 sichtbaren Karte, Spieler mit 2.
     dealerHand_.addCard(deck_.draw());
     playerHand_.addCard(deck_.draw());
     playerHand_.addCard(deck_.draw());
@@ -26,6 +27,7 @@ void BlackjackRound::playerStand() {
 
 std::vector<domain::Card> BlackjackRound::playDealerTurn() {
     std::vector<domain::Card> drawnCards;
+    // Standard-Dealer-Regel.
     while (dealerHand_.value() < 17) {
         const domain::Card card = deck_.draw();
         dealerHand_.addCard(card);
@@ -58,6 +60,7 @@ int BlackjackRound::evaluateResult() const {
     const int value_player = playerValue();
     const int value_dealer = dealerValue();
 
+    // Rückgabecodes sind für die UI-Ausgabe im Game-Orchestrator.
     if (value_dealer < 0 || value_player < 0) {
         return 0;
     }

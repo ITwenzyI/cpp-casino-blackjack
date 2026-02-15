@@ -347,6 +347,7 @@ void printBigText(const std::string& text) {
     if (kBigFont.empty())
         return;
 
+    // Drückt jede Glyphen-Zeile für den kompletten String, damit Blocktext entsteht.
     size_t maxLines = kBigFont.begin()->second.size();
     for (size_t line = 0; line < maxLines; ++line) {
         for (char c : text) {

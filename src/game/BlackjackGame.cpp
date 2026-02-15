@@ -1,5 +1,6 @@
 //
-// Created by Kilian on 13.05.25.
+// Created by Kilian on 13.05.25
+// Updated by Kilian on 15.02.26
 //
 #include "game/BlackjackGame.hpp"
 
@@ -13,6 +14,7 @@
 #include "util/BigText.hpp"
 
 namespace {
+// Hilfsabbildung vom Domain-Objekt zur Renderer-Darstellung.
 std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
     return {card.rankText(), card.suitText()};
 }
@@ -25,7 +27,8 @@ void BlackjackGame::run() {
     int choiceSpielauswahl = 0;
 
     do {
-        printBigText("Casino Menu");
+        // Oberstes Casino-Menü.
+        printBigText("Casino Menü");
         std::cout << "|====| Deluxe Casino |====|" << std::endl;
         std::cout << "1. Spielauswahl" << std::endl;
         std::cout << "Deine Auswahl: " << std::endl;
@@ -50,10 +53,10 @@ void BlackjackGame::run() {
 void BlackjackGame::showBlackjackMenu() {
     int choice;
     printBigText("BlackJack");
-    std::cout << "|====| Main Menue|====|" << std::endl;
+    std::cout << "|====| Main Menü|====|" << std::endl;
     std::cout << "1. Spiel starten" << std::endl;
     std::cout << "2. Regeln" << std::endl;
-    std::cout << "3. Zurueck" << std::endl;
+    std::cout << "3. Zurück" << std::endl;
     choice = input_.readInt();
 
     switch (choice) {
@@ -79,6 +82,7 @@ void BlackjackGame::playRound() {
     std::string playerName;
 
     std::cout << "Gebe deinen Benutzernamen ein:" << std::endl;
+    // Nach vorherigen int-Eingaben evtl. verbleibendes Newline entfernen.
     input_.discardLine();
     playerName = input_.readLine();
 
@@ -86,6 +90,7 @@ void BlackjackGame::playRound() {
     std::cout << "Das Spiel startet..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
+    // Neue Runde inkl. Kartenverteilung aus der Game-Schicht.
     round.start();
     clearRenderedHands();
 
@@ -94,6 +99,7 @@ void BlackjackGame::playRound() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     std::cout << "Dealers aktuelle optische Hand:" << std::endl;
+    // In dieser Variante hat der Dealer zunächst eine sichtbare Karte.
     const domain::Card dealerStartCard = round.dealerHand().cards().front();
     dealerHandValue = round.dealerValue();
     buildHandDealer(dealerStartCard);
@@ -114,7 +120,7 @@ void BlackjackGame::playRound() {
         std::cout << playerName << " hat einen BLACKJACK!" << std::endl;
         std::cout << playerName
                   << " gewinnt automatisch mit einem Blackjack und bekommt den 1.5-fachen Einsatz "
-                     "zurueck."
+                     "zurück."
                   << std::endl;
         return;
     }
@@ -122,6 +128,7 @@ void BlackjackGame::playRound() {
     std::cout << "Dealers aktueller Handwert: " << dealerHandValue << std::endl;
 
     bool weiter = true;
+    // Spielerphase: zieht Karten bis "nein" oder bust.
     while (weiter && playerHandValue < 21) {
         weiter = nextCardPlayer(round, playerName, playerHandValue);
     }
@@ -129,6 +136,7 @@ void BlackjackGame::playRound() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     const std::vector<domain::Card> dealerCards = round.playDealerTurn();
+    // Dealerphase inkl. Zwischenausgabe jeder gezogenen Karte.
     for (const domain::Card& dealerNewCard : dealerCards) {
         std::cout << "----------------------------------------------------------" << std::endl;
         std::cout << "Dealers aktuelle optische Hand:" << std::endl;
@@ -143,22 +151,23 @@ void BlackjackGame::playRound() {
     }
 
     switch (round.evaluateResult()) {
+        // Ergebniscode kommt aus BlackjackRound::evaluateResult().
         case 1:
             std::cout << "\nDer Dealer hat gewonnen mit: " << dealerHandValue << " Punkten!"
                       << std::endl;
             std::cout << playerName << " verliert seinen Einsatz leider." << std::endl;
-            std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
+            std::cout << "Beim nächsten mal wird es der Gewinn!" << std::endl;
             break;
         case 2:
             std::cout << "\n"
                       << playerName << " hat gewonnen mit: " << playerHandValue << " Punkten!"
                       << std::endl;
-            std::cout << playerName << " bekommt seinen Einsatz 2x zurueck." << std::endl;
-            std::cout << "Glueckwunsch zum Sieg!!!" << std::endl;
+            std::cout << playerName << " bekommt seinen Einsatz 2x zurück." << std::endl;
+            std::cout << "Glückwunsch zum Sieg!!!" << std::endl;
             break;
         case 3:
             std::cout << "\n"
-                      << playerName << " und der Dealer haben beide ueber 21 Punkte!" << std::endl;
+                      << playerName << " und der Dealer haben beide über 21 Punkte!" << std::endl;
             std::cout << "Somit gewinnt niemand und " << playerName << " verliert seinen Einsatz!"
                       << std::endl;
             std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
@@ -166,8 +175,8 @@ void BlackjackGame::playRound() {
         case 4:
             std::cout << "\nUnentschieden zwischen " << playerName << " und dem Dealer mit jeweils "
                       << playerHandValue << " Punkten!" << std::endl;
-            std::cout << playerName << " bekommt seinen Einsatz zurueck." << std::endl;
-            std::cout << "Glueckwunsch zum Unentschieden!" << std::endl;
+            std::cout << playerName << " bekommt seinen Einsatz zurück." << std::endl;
+            std::cout << "Glückwunsch zum Unentschieden!" << std::endl;
             break;
         default:
             std::cerr << "\nFehler!" << std::endl;
@@ -186,7 +195,7 @@ bool BlackjackGame::nextCardPlayer(
     BlackjackRound& round, const std::string& playerName, int& playerHandValue) {
     std::string playerChoiceNextCard;
 
-    std::cout << "Moechtest du noch eine Karte nehmen (Ja oder Nein)?" << std::endl;
+    std::cout << "Möchtest du noch eine Karte nehmen (Ja oder Nein)?" << std::endl;
     playerChoiceNextCard = input_.readWord();
     std::cout << "----------------------------------------------------------" << std::endl;
 
@@ -208,7 +217,7 @@ bool BlackjackGame::nextCardPlayer(
     buildHandPlayer(playerNewCard);
 
     if (playerHandValue > 21) {
-        std::cout << playerName << " ... Du bist leider ueber 21..." << std::endl;
+        std::cout << playerName << " ... Du bist leider über 21..." << std::endl;
     }
 
     return true;
@@ -218,15 +227,14 @@ void BlackjackGame::showRules() {
     int uselessChoice = 0;
     printBigText("Regeln BJ");
     std::cout << "|====| Allgemeines Ziel |====|" << std::endl;
-    std::cout << "1. Ziel des Spiels ist es, so nah wie moeglich an 21 Punkte zu kommen."
+    std::cout << "1. Ziel des Spiels ist es, so nah wie möglich an 21 Punkte zu kommen."
               << std::endl;
     std::cout << "2. Wer mehr als 21 Punkte hat, verliert automatisch (Bust)." << std::endl;
 
     std::cout << std::endl << "|====| Kartenwerte |====|" << std::endl;
     std::cout << "3. Zahlenkarten zaehlen entsprechend ihrem Zahlenwert (z. B. 2-10)." << std::endl;
-    std::cout << "4. Bube, Dame und Koenig zaehlen jeweils 10 Punkte." << std::endl;
-    std::cout << "5. Das Ass zaehlt 1 oder 11 Punkte - je nachdem, was guenstiger ist."
-              << std::endl;
+    std::cout << "4. Bube, Dame und König zählen jeweils 10 Punkte." << std::endl;
+    std::cout << "5. Das Ass zählt 1 oder 11 Punkte - je nachdem, was günstiger ist." << std::endl;
 
     std::cout << std::endl << "|====| Spielverlauf |====|" << std::endl;
     std::cout << "6. Jeder Spieler erhaelt zu Beginn zwei Karten." << std::endl;
@@ -234,7 +242,7 @@ void BlackjackGame::showRules() {
                  "mehr ('Stand')."
               << std::endl;
     std::cout
-        << "8. Das Ziel ist, naeher an 21 zu kommen als der Dealer, ohne sie zu ueberschreiten."
+        << "8. Das Ziel ist, naeher an 21 zu kommen als der Dealer, ohne sie zu überschreiten."
         << std::endl;
     std::cout << "9. Ein Blackjack besteht aus Ass + 10er-Karte mit den ersten beiden Karten."
               << std::endl;
@@ -252,6 +260,7 @@ void BlackjackGame::showRules() {
 }
 
 void BlackjackGame::buildHandPlayer(const domain::Card& card) {
+    // UI puffert Karten, damit jede neue Karte die komplette Hand erneut rendern kann.
     playerRenderedHand_.push_back(toPrintableCard(card));
     ConsoleRenderer renderer;
     renderer.printCards(playerRenderedHand_);
