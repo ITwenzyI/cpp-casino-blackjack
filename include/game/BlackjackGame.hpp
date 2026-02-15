@@ -8,6 +8,7 @@
 #include "domain/Card.hpp"
 #include "game/BlackjackRound.hpp"
 #include "ui/ConsoleInput.hpp"
+#include "ui/ConsoleOutput.hpp"
 
 namespace game {
 
@@ -29,6 +30,8 @@ class BlackjackGame {
     std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;
     // Zentraler Input-Adapter, damit Game-Logik kein direktes std::cin nutzt.
     ConsoleInput input_;
+    // Zentraler Output-Adapter, damit Game-Logik kein direktes std::cout nutzt.
+    ConsoleOutput output_;
 };
 
 } // namespace game
