@@ -9,24 +9,20 @@
 std::vector<std::string> ConsoleRenderer::getCardLines(
     const std::string& rank, const std::string& suit) const {
     std::vector<std::string> card(7);
-    card[0] =
-        "â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”";
-    card[1] = "â”‚ " + rank + (rank.size() == 1 ? "       " : "      ") + "â”‚";
-    card[2] = "â”‚         â”‚";
-    card[3] = "â”‚    " + suit + "    â”‚";
-    card[4] = "â”‚         â”‚";
-    card[5] = "â”‚       " + (rank.size() == 1 ? rank + " " : rank) + "â”‚";
-    card[6] = "â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜";
+    card[0] = "┌─────────┐";
+    card[1] = "│ " + rank + (rank.size() == 1 ? "       " : "      ") + "│";
+    card[2] = "│         │";
+    card[3] = "│    " + suit + "    │";
+    card[4] = "│         │";
+    card[5] = "│       " + (rank.size() == 1 ? rank + " " : rank) + "│";
+    card[6] = "└─────────┘";
     return card;
 }
 
 // Rückseiten-Darstellung für verdeckte Dealer-Karten.
 std::vector<std::string> ConsoleRenderer::getVerdeckteKarte() const {
-    return {
-        "â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”",
-        "â”‚â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â”‚", "â”‚â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â”‚",
-        "â”‚â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â”‚", "â”‚â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â”‚",
-        "â”‚â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘â”‚", "â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜"};
+    return {"┌─────────┐", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│",
+        "│░░░░░░░░░│", "└─────────┘"};
 }
 
 void ConsoleRenderer::printCards(
