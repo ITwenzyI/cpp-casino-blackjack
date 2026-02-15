@@ -31,6 +31,7 @@ void BlackjackGame::run() {
         printBigText("Casino Menü");
         std::cout << "|====| Deluxe Casino |====|" << std::endl;
         std::cout << "1. Spielauswahl" << std::endl;
+        std::cout << "2. Beenden" << std::endl;
         std::cout << "Deine Auswahl: " << std::endl;
         choiceMainMenu = input_.readInt();
         input_.discardLine();
