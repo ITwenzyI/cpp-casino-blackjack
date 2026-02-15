@@ -3,7 +3,7 @@
 
 #include <string>
 
-// Gibt einen String als mehrzeilige ASCII-Art aus.
+// Prints a string as multi-line ASCII art.
 void printBigText(const std::string& text);
 
 #endif

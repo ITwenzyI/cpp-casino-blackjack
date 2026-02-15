@@ -10,11 +10,11 @@ class Hand {
   public:
     void clear();
     void addCard(const Card& card);
-    // Berechnet den aktuellen Blackjack-Wert inkl. Ass-Korrektur (11 -> 1).
+    // Calculates current blackjack value including ace correction (11 -> 1).
     int value() const;
-    // True nur bei exakt zwei Karten mit Wert 21.
+    // True only for exactly two cards with value 21.
     bool isBlackjack() const;
-    // Read-only Zugriff für Anzeige- und Spiellogik.
+    // Read-only access for rendering and game logic.
     const std::vector<Card>& cards() const;
 
   private:

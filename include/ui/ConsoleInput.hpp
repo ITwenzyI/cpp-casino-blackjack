@@ -5,13 +5,13 @@
 
 class ConsoleInput {
   public:
-    // Liest eine ganze Zahl (z.B. Menüauswahl).
+    // Reads an integer (e.g. menu selection).
     int readInt();
-    // Liest ein einzelnes Wort bis zum nächsten Whitespace.
+    // Reads a single word until the next whitespace.
     std::string readWord();
-    // Liest eine komplette Zeile inklusive Leerzeichen.
+    // Reads a full line including spaces.
     std::string readLine();
-    // Verwirft den Rest der aktuellen Zeile im Eingabepuffer.
+    // Discards the rest of the current line from the input buffer.
     void discardLine();
 };
 

@@ -9,16 +9,16 @@
 
 class ConsoleRenderer {
   public:
-    // Rendert offene Karten und optional zusätzliche verdeckte Karten rechts daneben.
+    // Renders open cards and optional additional hidden cards to the right.
     void printCards(const std::vector<std::pair<std::string, std::string>>& cards,
         int verdeckteAnzahl = 0) const;
-    // Rendert nur verdeckte Karten.
+    // Renders only hidden cards.
     void printVerdeckteKarten(int anzahl) const;
 
   private:
-    // Baut die 7 Textzeilen einer offenen Karte.
+    // Builds the 7 text lines of an open card.
     std::vector<std::string> getCardLines(const std::string& rank, const std::string& suit) const;
-    // Baut die 7 Textzeilen einer verdeckten Karte.
+    // Builds the 7 text lines of a hidden card.
     std::vector<std::string> getVerdeckteKarte() const;
 };
 
