@@ -14,6 +14,7 @@ int Hand::value() const {
     int total = 0;
     int aces = 0;
 
+    // Erst alle Asse als 11 rechnen.
     for (const Card& card : cards_) {
         total += card.blackjackValue();
         if (card.rank() == 14) {
@@ -21,6 +22,7 @@ int Hand::value() const {
         }
     }
 
+    // Solange über 21, Asse schrittweise von 11 auf 1 abwerten.
     while (total > 21 && aces > 0) {
         total -= 10;
         --aces;
