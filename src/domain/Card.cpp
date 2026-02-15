@@ -14,7 +14,7 @@ Suit Card::suit() const {
 }
 
 int Card::blackjackValue() const {
-    // Ass wird hier als 11 gewertet; Hand::value() korrigiert später ggf. auf 1.
+    // Ace is treated as 11 here; Hand::value() may later adjust it to 1.
     if (rank_ == 14) {
         return 11;
     }

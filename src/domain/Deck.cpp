@@ -12,7 +12,7 @@ void Deck::reset() {
     cards_.clear();
     cards_.reserve(52);
 
-    // Ein Standard-Deck: 4 Farben x Ranks 2..14.
+    // A standard deck: 4 suits x ranks 2..14.
     for (const Suit suit : {Suit::Spades, Suit::Hearts, Suit::Diamonds, Suit::Clubs}) {
         for (int rank = 2; rank <= 14; ++rank) {
             cards_.emplace_back(rank, suit);
@@ -29,7 +29,7 @@ void Deck::shuffle() {
 
 Card Deck::draw() {
     if (nextIndex_ >= cards_.size()) {
-        // Endlosspiel: bei leerem Deck automatisch neu starten.
+        // Endless play: rebuild and reshuffle automatically when deck is empty.
         reset();
         shuffle();
     }

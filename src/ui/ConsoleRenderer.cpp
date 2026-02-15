@@ -5,7 +5,7 @@
 #include "ui/ConsoleRenderer.hpp"
 #include <iostream>
 
-// Renderer arbeitet zeilenbasiert: jede Karte wird als 7 Textzeilen aufgebaut.
+// Renderer works line-based: each card is built from 7 text lines.
 std::vector<std::string> ConsoleRenderer::getCardLines(
     const std::string& rank, const std::string& suit) const {
     std::vector<std::string> card(7);
@@ -19,7 +19,7 @@ std::vector<std::string> ConsoleRenderer::getCardLines(
     return card;
 }
 
-// Rückseiten-Darstellung für verdeckte Dealer-Karten.
+// Backside representation for hidden dealer cards.
 std::vector<std::string> ConsoleRenderer::getVerdeckteKarte() const {
     return {"┌─────────┐", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│",
         "│░░░░░░░░░│", "└─────────┘"};
@@ -37,7 +37,7 @@ void ConsoleRenderer::printCards(
         allCardLines.push_back(getVerdeckteKarte());
     }
 
-    // Gleiche Zeile aller Karten zusammen ausgeben => horizontale Handdarstellung.
+    // Print the same line of all cards together => horizontal hand layout.
     for (int i = 0; i < 7; ++i) {
         for (const auto& card : allCardLines) {
             std::cout << card[i] << " ";
