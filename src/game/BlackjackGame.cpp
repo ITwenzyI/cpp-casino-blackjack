@@ -13,7 +13,7 @@
 #include "util/BigText.hpp"
 
 namespace {
-// Hilfsabbildung vom Domain-Objekt zur Renderer-Darstellung.
+// Helper mapping from domain object to renderer representation.
 std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
     return {card.rankText(), card.suitText()};
 }
@@ -26,7 +26,7 @@ void BlackjackGame::run() {
     int choiceSpielauswahl = 0;
 
     do {
-        // Oberstes Casino-Menüe.
+        // Top-level casino menu.
         printBigText("Casino Menue");
         output_.showCasinoMenu();
         choiceMainMenu = input_.readInt();
@@ -73,7 +73,7 @@ void BlackjackGame::playRound() {
     std::string playerName;
 
     output_.promptUsername();
-    // Nach vorherigen int-Eingaben evtl. verbleibendes Newline entfernen.
+    // Remove a possible leftover newline after previous int input.
     input_.discardLine();
     playerName = input_.readLine();
 
@@ -81,7 +81,7 @@ void BlackjackGame::playRound() {
     output_.showGameStarting();
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    // Neue Runde inkl. Kartenverteilung aus der Game-Schicht.
+    // Start a new round including initial dealing from the game layer.
     round.start();
     clearRenderedHands();
 
@@ -90,7 +90,7 @@ void BlackjackGame::playRound() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     output_.showDealerVisualHand();
-    // In dieser Variante hat der Dealer zunächst eine sichtbare Karte.
+    // In this variant the dealer starts with one visible card.
     const domain::Card dealerStartCard = round.dealerHand().cards().front();
     dealerHandValue = round.dealerValue();
     buildHandDealer(dealerStartCard);
@@ -116,7 +116,7 @@ void BlackjackGame::playRound() {
     output_.showDealerHandValue(dealerHandValue);
 
     bool weiter = true;
-    // Spielerphase: zieht Karten bis "nein" oder bust.
+    // Player phase: draw cards until "no" or bust.
     while (weiter && playerHandValue < 21) {
         weiter = nextCardPlayer(round, playerName, playerHandValue);
     }
@@ -124,7 +124,7 @@ void BlackjackGame::playRound() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     const std::vector<domain::Card> dealerCards = round.playDealerTurn();
-    // Dealerphase inkl. Zwischenausgabe jeder gezogenen Karte.
+    // Dealer phase including intermediate output for each drawn card.
     for (const domain::Card& dealerNewCard : dealerCards) {
         output_.showSeparator();
         output_.showDealerVisualHand();
@@ -186,7 +186,7 @@ void BlackjackGame::showRules() {
 }
 
 void BlackjackGame::buildHandPlayer(const domain::Card& card) {
-    // UI puffert Karten, damit jede neue Karte die komplette Hand erneut rendern kann.
+    // UI buffers cards so each new card can re-render the full hand.
     playerRenderedHand_.push_back(toPrintableCard(card));
     ConsoleRenderer renderer;
     renderer.printCards(playerRenderedHand_);

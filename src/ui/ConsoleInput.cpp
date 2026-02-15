@@ -22,6 +22,6 @@ std::string ConsoleInput::readLine() {
 }
 
 void ConsoleInput::discardLine() {
-    // Entfernt Restzeichen inkl. Newline, um Input-Mischformen sicher zu kombinieren.
+    // Removes remaining characters including newline to safely combine input styles.
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }

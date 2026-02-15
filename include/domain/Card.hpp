@@ -14,11 +14,11 @@ class Card {
 
     int rank() const;
     Suit suit() const;
-    // Blackjack-Wert: Bildkarten=10, Ass standardmässig=11
+    // Blackjack value: face cards=10, ace defaults to 11
     int blackjackValue() const;
-    // Ausgabe kürzer Kartenranks für Renderer (z.B. "A", "10")
+    // Returns short rank text for renderer output (e.g. "A", "10")
     std::string rankText() const;
-    // Gibt Suit als Symbolstring zurück
+    // Returns suit as symbol string
     std::string suitText() const;
 
   private:

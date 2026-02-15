@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-    // Aktiviert UTF-8-Ausgabe für Kartensymbole und Sonderzeichen in der Windows-Konsole.
+    // Enables UTF-8 output for card symbols and special characters in the Windows console.
     SetConsoleOutputCP(CP_UTF8);
 
     game::BlackjackGame game;
