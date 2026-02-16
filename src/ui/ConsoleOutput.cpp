@@ -5,7 +5,7 @@
 void ConsoleOutput::showCasinoMenu() const {
     std::cout << "|====| Deluxe Casino |====|" << std::endl;
     std::cout << "1. Spielauswahl" << std::endl;
-    std::cout << "2. Beenden" << std::endl;
+    std::cout << "0. Beenden" << std::endl;
     std::cout << "Deine Auswahl:" << std::endl;
 }
 
@@ -25,10 +25,6 @@ void ConsoleOutput::showBlackjackMenu() const {
 
 void ConsoleOutput::showInvalidChoice() const {
     std::cout << "Invalid choice" << std::endl;
-}
-
-void ConsoleOutput::promptUsername() const {
-    std::cout << "Gebe deinen Benutzernamen ein:" << std::endl;
 }
 
 void ConsoleOutput::showWelcome(const std::string& playerName) const {
@@ -121,7 +117,8 @@ void ConsoleOutput::showRoundResult(const int resultCode, const std::string& pla
 
 void ConsoleOutput::showSatisfactionPrompt() const {
     std::cout << std::endl << std::endl;
-    std::cout << "Bist du zufrieden?" << std::endl;
+    std::cout << "Vielen dank für das spielen von Kilians Blackjack!" << "\n Bist du zufrieden?"
+              << std::endl;
 }
 
 void ConsoleOutput::showRules() const {

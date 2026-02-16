@@ -10,7 +10,6 @@ class ConsoleOutput {
     void showBlackjackMenu() const;
     void showInvalidChoice() const;
 
-    void promptUsername() const;
     void showWelcome(const std::string& playerName) const;
     void showGameStarting() const;
     void showSeparator() const;
