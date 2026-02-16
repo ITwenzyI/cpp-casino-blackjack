@@ -7,6 +7,14 @@
 
 namespace game {
 
+enum class RoundResult {
+    Invalid = 0,
+    DealerWins,
+    PlayerWins,
+    BothBust,
+    Push
+};
+
 class BlackjackRound {
   public:
     // Initializes a new round (deck reset/shuffle, initial dealing).
@@ -23,8 +31,8 @@ class BlackjackRound {
     int playerValue() const;
     int dealerValue() const;
     bool playerHasBlackjack() const;
-    // 1=dealer wins, 2=player wins, 3=both bust, 4=push, 0=error case
-    int evaluateResult() const;
+    // Returns a typed round result for clearer game flow and debugging.
+    RoundResult evaluateResult() const;
 
   private:
     domain::Deck deck_;

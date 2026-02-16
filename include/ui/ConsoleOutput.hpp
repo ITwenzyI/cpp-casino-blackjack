@@ -2,6 +2,7 @@
 #define UI_CONSOLE_OUTPUT_HPP
 
 #include <string>
+#include "game/BlackjackRound.hpp"
 
 class ConsoleOutput {
   public:
@@ -27,7 +28,7 @@ class ConsoleOutput {
     void showPlayerBust(const std::string& playerName) const;
 
     void showRoundResult(
-        int resultCode, const std::string& playerName, int playerValue, int dealerValue) const;
+        game::RoundResult resultCode, const std::string& playerName, int playerValue, int dealerValue) const;
     void showSatisfactionPrompt() const;
     void showRules() const;
 
