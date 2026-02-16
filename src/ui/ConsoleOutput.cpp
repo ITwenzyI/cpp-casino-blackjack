@@ -82,33 +82,34 @@ void ConsoleOutput::showPlayerBust(const std::string& playerName) const {
     std::cout << playerName << " ... Du bist leider ueber 21..." << std::endl;
 }
 
-void ConsoleOutput::showRoundResult(const int resultCode, const std::string& playerName,
+void ConsoleOutput::showRoundResult(const game::RoundResult resultCode, const std::string& playerName,
     const int playerValue, const int dealerValue) const {
     std::cout << std::endl;
     switch (resultCode) {
-        case 1:
+        case game::RoundResult::DealerWins:
             std::cout << "Der Dealer hat gewonnen mit: " << dealerValue << " Punkten!" << std::endl;
             std::cout << playerName << " verliert seinen Einsatz leider." << std::endl;
             std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
             break;
-        case 2:
+        case game::RoundResult::PlayerWins:
             std::cout << playerName << " hat gewonnen mit: " << playerValue << " Punkten!"
                       << std::endl;
             std::cout << playerName << " bekommt seinen Einsatz 2x zurueck." << std::endl;
             std::cout << "Glueckwunsch zum Sieg!!!" << std::endl;
             break;
-        case 3:
+        case game::RoundResult::BothBust:
             std::cout << playerName << " und der Dealer haben beide ueber 21 Punkte!" << std::endl;
             std::cout << "Somit gewinnt niemand und " << playerName << " verliert seinen Einsatz!"
                       << std::endl;
             std::cout << "Beim naechsten mal wird es der Gewinn!" << std::endl;
             break;
-        case 4:
+        case game::RoundResult::Push:
             std::cout << "Unentschieden zwischen " << playerName << " und dem Dealer mit jeweils "
                       << playerValue << " Punkten!" << std::endl;
             std::cout << playerName << " bekommt seinen Einsatz zurueck." << std::endl;
             std::cout << "Glueckwunsch zum Unentschieden!" << std::endl;
             break;
+        case game::RoundResult::Invalid:
         default:
             showError();
             break;
