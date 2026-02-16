@@ -11,6 +11,5 @@ int main() {
     game::BlackjackGame game;
     game.run();
 
-    std::cout << "Danke :)!\n";
     return 0;
 }
