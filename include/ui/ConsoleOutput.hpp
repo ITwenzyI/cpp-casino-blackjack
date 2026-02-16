@@ -27,8 +27,8 @@ class ConsoleOutput {
     void showHitPrompt() const;
     void showPlayerBust(const std::string& playerName) const;
 
-    void showRoundResult(
-        game::RoundResult resultCode, const std::string& playerName, int playerValue, int dealerValue) const;
+    void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
+        int playerValue, int dealerValue) const;
     void showSatisfactionPrompt() const;
     void showRules() const;
 
