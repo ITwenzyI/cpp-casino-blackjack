@@ -27,7 +27,7 @@ void BlackjackGame::run() {
 
     do {
         // Top-level casino menu.
-        printBigText("Casino Menue");
+        printBigText("Casino Menu");
         output_.showCasinoMenu();
         mainMenuChoice = input_.readInt();
         input_.discardLine();
@@ -158,7 +158,7 @@ bool BlackjackGame::nextCardPlayer(
         playerChoiceNextCard.begin(),
         [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
-    if (playerChoiceNextCard != "ja") {
+    if (playerChoiceNextCard != "yes" && playerChoiceNextCard != "ja") {
         return false;
     }
 
@@ -179,7 +179,7 @@ bool BlackjackGame::nextCardPlayer(
 }
 
 void BlackjackGame::showRules() {
-    printBigText("Regeln BJ");
+    printBigText("Rules BJ");
     output_.showRules();
     input_.readInt();
 }
