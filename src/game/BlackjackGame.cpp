@@ -137,7 +137,8 @@ void BlackjackGame::playRound() {
         output_.showNoMoreDealerCards();
     }
 
-    output_.showRoundResult(round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
+    output_.showRoundResult(
+        static_cast<int>(round.evaluateResult()), playerName, playerHandValue, dealerHandValue);
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
 

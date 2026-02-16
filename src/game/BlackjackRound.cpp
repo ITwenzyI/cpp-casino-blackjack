@@ -56,30 +56,30 @@ bool BlackjackRound::playerHasBlackjack() const {
     return playerHand_.isBlackjack();
 }
 
-int BlackjackRound::evaluateResult() const {
+RoundResult BlackjackRound::evaluateResult() const {
     const int value_player = playerValue();
     const int value_dealer = dealerValue();
 
-    // Return codes are used by the game orchestrator for UI output.
+    // Typed result values are used by the game orchestrator for UI output.
     if (value_dealer < 0 || value_player < 0) {
-        return 0;
+        return RoundResult::Invalid;
     }
     if (value_dealer > 21 && value_player <= 21) {
-        return 2;
+        return RoundResult::PlayerWins;
     }
     if (value_player > 21 && value_dealer <= 21) {
-        return 1;
+        return RoundResult::DealerWins;
     }
     if (value_player > 21 && value_dealer > 21) {
-        return 3;
+        return RoundResult::BothBust;
     }
     if (value_player == value_dealer) {
-        return 4;
+        return RoundResult::Push;
     }
     if (value_player > value_dealer) {
-        return 2;
+        return RoundResult::PlayerWins;
     }
-    return 1;
+    return RoundResult::DealerWins;
 }
 
 } // namespace game
