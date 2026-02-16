@@ -22,26 +22,26 @@ std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
 namespace game {
 
 void BlackjackGame::run() {
-    int choiceMainMenu = 0;
-    int choiceSpielauswahl = 0;
+    int mainMenuChoice = 0;
+    int gameSelectionChoice = 0;
 
     do {
         // Top-level casino menu.
-        printBigText("Casino Menue");
+        printBigText("Casino Menu");
         output_.showCasinoMenu();
-        choiceMainMenu = input_.readInt();
+        mainMenuChoice = input_.readInt();
         input_.discardLine();
 
-        if (choiceMainMenu == 1) {
+        if (mainMenuChoice == 1) {
             output_.showGameSelectionMenu();
-            choiceSpielauswahl = input_.readInt();
+            gameSelectionChoice = input_.readInt();
             input_.discardLine();
 
-            if (choiceSpielauswahl == 1) {
+            if (gameSelectionChoice == 1) {
                 showBlackjackMenu();
             }
         }
-    } while (choiceMainMenu == 1);
+    } while (mainMenuChoice == 1);
 }
 
 void BlackjackGame::showBlackjackMenu() {
@@ -85,7 +85,7 @@ void BlackjackGame::playRound() {
     clearRenderedHands();
 
     output_.showDealerStartHand();
-    renderer.printVerdeckteKarten(1);
+    renderer.printHiddenCards(1);
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     output_.showDealerVisualHand();
@@ -114,10 +114,10 @@ void BlackjackGame::playRound() {
 
     output_.showDealerHandValue(dealerHandValue);
 
-    bool weiter = true;
+    bool continueRound = true;
     // Player phase: draw cards until "no" or bust.
-    while (weiter && playerHandValue < 21) {
-        weiter = nextCardPlayer(round, playerName, playerHandValue);
+    while (continueRound && playerHandValue < 21) {
+        continueRound = nextCardPlayer(round, playerName, playerHandValue);
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -158,7 +158,7 @@ bool BlackjackGame::nextCardPlayer(
         playerChoiceNextCard.begin(),
         [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
-    if (playerChoiceNextCard != "ja") {
+    if (playerChoiceNextCard != "yes" && playerChoiceNextCard != "ja") {
         return false;
     }
 
@@ -179,7 +179,7 @@ bool BlackjackGame::nextCardPlayer(
 }
 
 void BlackjackGame::showRules() {
-    printBigText("Regeln BJ");
+    printBigText("Rules BJ");
     output_.showRules();
     input_.readInt();
 }

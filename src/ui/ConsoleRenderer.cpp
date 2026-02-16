@@ -21,21 +21,21 @@ std::vector<std::string> ConsoleRenderer::getCardLines(
 }
 
 // Backside representation for hidden dealer cards.
-std::vector<std::string> ConsoleRenderer::getVerdeckteKarte() const {
+std::vector<std::string> ConsoleRenderer::getHiddenCardLines() const {
     return {"┌─────────┐", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│", "│░░░░░░░░░│",
         "│░░░░░░░░░│", "└─────────┘"};
 }
 
 void ConsoleRenderer::printCards(
-    const std::vector<std::pair<std::string, std::string>>& cards, int verdeckteAnzahl) const {
+    const std::vector<std::pair<std::string, std::string>>& cards, int hiddenCount) const {
     std::vector<std::vector<std::string>> allCardLines;
 
     for (const auto& [rank, suit] : cards) {
         allCardLines.push_back(getCardLines(rank, suit));
     }
 
-    for (int i = 0; i < verdeckteAnzahl; ++i) {
-        allCardLines.push_back(getVerdeckteKarte());
+    for (int i = 0; i < hiddenCount; ++i) {
+        allCardLines.push_back(getHiddenCardLines());
     }
 
     // Print the same line of all cards together => horizontal hand layout.
@@ -47,10 +47,10 @@ void ConsoleRenderer::printCards(
     }
 }
 
-void ConsoleRenderer::printVerdeckteKarten(int anzahl) const {
+void ConsoleRenderer::printHiddenCards(int count) const {
     std::vector<std::vector<std::string>> allCards;
-    for (int i = 0; i < anzahl; ++i) {
-        allCards.push_back(getVerdeckteKarte());
+    for (int i = 0; i < count; ++i) {
+        allCards.push_back(getHiddenCardLines());
     }
 
     for (int zeile = 0; zeile < 7; ++zeile) {
