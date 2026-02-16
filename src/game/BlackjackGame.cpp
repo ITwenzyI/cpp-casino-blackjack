@@ -85,7 +85,7 @@ void BlackjackGame::playRound() {
     clearRenderedHands();
 
     output_.showDealerStartHand();
-    renderer.printVerdeckteKarten(1);
+    renderer.printHiddenCards(1);
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     output_.showDealerVisualHand();
