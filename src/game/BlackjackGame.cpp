@@ -34,8 +34,8 @@ int visibleDealerValue(const game::BlackjackRound& round) {
     domain::Hand visibleHand;
 
     for (std::size_t i = 0; i < dealerCards.size(); ++i) {
-        // Keep the initially hidden second dealer card out of the visible HUD value.
-        if (i == 1) {
+        // Keep the initially hidden first dealer card out of the visible HUD value.
+        if (i == 0) {
             continue;
         }
         visibleHand.addCard(dealerCards[i]);
@@ -166,8 +166,8 @@ void BlackjackGame::playRound() {
         pacer_.pauseMedium();
 
         output_.showDealerVisualHand();
-        // In this variant the dealer starts with one visible card.
-        const domain::Card dealerStartCard = round.dealerHand().cards().front();
+        // Dealer shows only the second card while the first one stays hidden.
+        const domain::Card dealerStartCard = round.dealerHand().cards().at(1);
         output_.showDealerDrawsCard();
         output_.showDrawingCard();
         pacer_.pauseMedium();
@@ -220,7 +220,10 @@ void BlackjackGame::playRound() {
             pacer_.pauseMedium();
             output_.clearScreen();
             output_.showSection("Dealer Turn");
-            renderDealerHand(true);
+            const domain::Card dealerHiddenCard = round.dealerHand().cards().front();
+            dealerRenderedHand_.insert(dealerRenderedHand_.begin(), toPrintableCard(dealerHiddenCard));
+            dealerHandValue = round.dealerValue();
+            renderDealerHand(false);
             renderPlayerHand(playerName);
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
 
@@ -233,11 +236,11 @@ void BlackjackGame::playRound() {
                 output_.showSeparator();
                 output_.showDealerVisualHand();
                 buildHandDealer(dealerNewCard);
-                dealerHandValue = visibleDealerValue(round);
+                dealerHandValue = round.dealerValue();
                 output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
                 pacer_.pauseLong();
             }
-            dealerHandValue = visibleDealerValue(round);
+            dealerHandValue = round.dealerValue();
             if (dealerHandValue >= 17) {
                 output_.showNoMoreDealerCards();
                 pacer_.pauseMedium();
