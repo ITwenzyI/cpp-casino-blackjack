@@ -111,6 +111,10 @@ void ConsoleOutput::showHitPrompt() const {
     std::cout << "Do you want to take another card (yes or no)?" << std::endl;
 }
 
+void ConsoleOutput::showInvalidYesNo() const {
+    std::cout << "Invalid input. Please enter yes or no." << std::endl;
+}
+
 void ConsoleOutput::showPlayerBust(const std::string& playerName) const {
     std::cout << playerName << " ... You are over 21..." << std::endl;
 }

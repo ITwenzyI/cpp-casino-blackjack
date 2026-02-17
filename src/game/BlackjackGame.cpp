@@ -202,16 +202,22 @@ bool BlackjackGame::nextCardPlayer(
     BlackjackRound& round, const std::string& playerName, int& playerHandValue) {
     std::string playerChoiceNextCard;
 
-    output_.showHitPrompt();
-    playerChoiceNextCard = input_.readWord();
-    output_.showSeparator();
+    while (true) {
+        output_.showHitPrompt();
+        playerChoiceNextCard = input_.readWord();
+        output_.showSeparator();
 
-    std::transform(playerChoiceNextCard.begin(), playerChoiceNextCard.end(),
-        playerChoiceNextCard.begin(),
-        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        std::transform(playerChoiceNextCard.begin(), playerChoiceNextCard.end(),
+            playerChoiceNextCard.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
-    if (playerChoiceNextCard != "yes" && playerChoiceNextCard != "ja") {
-        return false;
+        if (playerChoiceNextCard == "yes" || playerChoiceNextCard == "ja") {
+            break;
+        }
+        if (playerChoiceNextCard == "no" || playerChoiceNextCard == "nein") {
+            return false;
+        }
+        output_.showInvalidYesNo();
     }
 
     const domain::Card playerNewCard = round.playerHit();
