@@ -165,9 +165,12 @@ void BlackjackGame::playRound() {
 
         if (round.playerHasBlackjack()) {
             output_.showPlayerBlackjack(playerName);
+            pacer_.pauseShort();
             output_.showBlackjackPayout(playerName);
+            pacer_.pauseMedium();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), game::RoundResult::PlayerWins);
+            pacer_.pauseLong();
         } else {
             bool continueRound = true;
             // Player phase: draw cards until "no" or bust.
@@ -191,16 +194,20 @@ void BlackjackGame::playRound() {
             dealerHandValue = round.dealerValue();
             if (dealerHandValue >= 17) {
                 output_.showNoMoreDealerCards();
+                pacer_.pauseMedium();
             }
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
+            pacer_.pauseMedium();
 
             const game::RoundResult roundResult = round.evaluateResult();
             output_.showRoundResult(roundResult, playerName, playerHandValue, dealerHandValue);
+            pacer_.pauseMedium();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), roundResult);
             pacer_.pauseLong();
         }
 
+        pacer_.pauseShort();
         output_.showReplayMenu();
         const int replayChoice = readMenuChoice(1, 2);
         if (replayChoice == 1) {

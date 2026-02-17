@@ -27,7 +27,7 @@ void GamePacer::pauseShort() const {
         case PaceMode::Instant:
             return;
         case PaceMode::Smooth:
-            sleepMs(200);
+            sleepMs(300);
             return;
         case PaceMode::Cinematic:
             sleepMs(450);
@@ -40,7 +40,7 @@ void GamePacer::pauseMedium() const {
         case PaceMode::Instant:
             return;
         case PaceMode::Smooth:
-            sleepMs(650);
+            sleepMs(900);
             return;
         case PaceMode::Cinematic:
             sleepMs(1300);
@@ -53,7 +53,7 @@ void GamePacer::pauseLong() const {
         case PaceMode::Instant:
             return;
         case PaceMode::Smooth:
-            sleepMs(1200);
+            sleepMs(1600);
             return;
         case PaceMode::Cinematic:
             sleepMs(2200);
