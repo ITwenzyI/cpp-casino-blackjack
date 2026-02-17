@@ -225,26 +225,26 @@ void BlackjackGame::playRound() {
             const domain::Card dealerHiddenCard = round.dealerHand().cards().front();
             output_.showDealerDrawsCard();
             output_.showDrawingCard();
-            pacer_.pauseMedium();
+            pacer_.pauseLong();
             dealerRenderedHand_.insert(dealerRenderedHand_.begin(), toPrintableCard(dealerHiddenCard));
             dealerHandValue = round.dealerValue();
             renderDealerHand(false);
             renderPlayerHand(playerName);
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
-            pacer_.pauseMedium();
+            pacer_.pauseLong();
 
             const std::vector<domain::Card> dealerCards = round.playDealerTurn();
             // Dealer phase including intermediate output for each drawn card.
             for (const domain::Card& dealerNewCard : dealerCards) {
                 output_.showDealerDrawsCard();
                 output_.showDrawingCard();
-                pacer_.pauseMedium();
+                pacer_.pauseLong();
                 output_.showSeparator();
                 output_.showDealerVisualHand();
                 buildHandDealer(dealerNewCard);
                 dealerHandValue = round.dealerValue();
                 output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
-                pacer_.pauseMedium();
+                pacer_.pauseLong();
             }
             dealerHandValue = round.dealerValue();
             if (dealerHandValue >= 17) {
