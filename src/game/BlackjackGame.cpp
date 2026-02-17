@@ -102,6 +102,7 @@ void BlackjackGame::playRound() {
     int playerHandValue = 0;
     std::string playerName;
 
+    output_.promptUsername();
     // Remove a possible leftover newline after previous int input.
     input_.discardLine();
     playerName = input_.readLine();
