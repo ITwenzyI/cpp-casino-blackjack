@@ -229,7 +229,6 @@ void BlackjackGame::playRound() {
             dealerRenderedHand_.insert(dealerRenderedHand_.begin(), toPrintableCard(dealerHiddenCard));
             dealerHandValue = round.dealerValue();
             renderDealerHand(false);
-            renderPlayerHand(playerName);
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
             pacer_.pauseLong();
 
