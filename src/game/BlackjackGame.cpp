@@ -134,6 +134,8 @@ void BlackjackGame::playRound() {
         int dealerHandValue = 0;
         int playerHandValue = 0;
 
+        output_.clearScreen();
+        output_.showSection("Round Start");
         output_.showWelcome(playerName);
         output_.showGameStarting();
         pacer_.pauseMedium();
@@ -174,6 +176,11 @@ void BlackjackGame::playRound() {
         output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
 
         if (round.playerHasBlackjack()) {
+            output_.clearScreen();
+            output_.showSection("Result");
+            renderDealerHand(true);
+            renderPlayerHand(playerName);
+            output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
             output_.showPlayerBlackjack(playerName);
             pacer_.pauseShort();
             output_.showBlackjackPayout(playerName);
@@ -182,6 +189,12 @@ void BlackjackGame::playRound() {
                 toCardTokens(round.dealerHand()), round.dealerValue(), game::RoundResult::PlayerWins);
             pacer_.pauseLong();
         } else {
+            output_.clearScreen();
+            output_.showSection("Player Turn");
+            renderDealerHand(true);
+            renderPlayerHand(playerName);
+            output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
+
             bool continueRound = true;
             // Player phase: draw cards until "no" or bust.
             while (continueRound && playerHandValue < 21) {
@@ -190,6 +203,11 @@ void BlackjackGame::playRound() {
             }
 
             pacer_.pauseMedium();
+            output_.clearScreen();
+            output_.showSection("Dealer Turn");
+            renderDealerHand(true);
+            renderPlayerHand(playerName);
+            output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
 
             const std::vector<domain::Card> dealerCards = round.playDealerTurn();
             // Dealer phase including intermediate output for each drawn card.
@@ -213,6 +231,11 @@ void BlackjackGame::playRound() {
             pacer_.pauseMedium();
 
             const game::RoundResult roundResult = round.evaluateResult();
+            output_.clearScreen();
+            output_.showSection("Result");
+            renderDealerHand(false);
+            renderPlayerHand(playerName);
+            output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
             output_.showRoundResult(roundResult, playerName, playerHandValue, dealerHandValue);
             pacer_.pauseMedium();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
@@ -300,6 +323,21 @@ void BlackjackGame::buildHandDealer(const domain::Card& card) {
 void BlackjackGame::clearRenderedHands() {
     playerRenderedHand_.clear();
     dealerRenderedHand_.clear();
+}
+
+void BlackjackGame::renderPlayerHand(const std::string& playerName) const {
+    output_.showPlayerVisualHand(playerName);
+    ConsoleRenderer renderer;
+    renderer.printCards(playerRenderedHand_);
+}
+
+void BlackjackGame::renderDealerHand(const bool withHiddenCard) const {
+    output_.showDealerVisualHand();
+    ConsoleRenderer renderer;
+    if (withHiddenCard) {
+        renderer.printHiddenCards(1);
+    }
+    renderer.printCards(dealerRenderedHand_);
 }
 
 } // namespace game
