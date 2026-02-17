@@ -5,7 +5,10 @@
 
 int ConsoleInput::readInt() {
     int value = 0;
-    std::cin >> value;
+    while (!(std::cin >> value)) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     return value;
 }
 
