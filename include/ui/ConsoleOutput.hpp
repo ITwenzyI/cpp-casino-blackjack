@@ -29,6 +29,7 @@ class ConsoleOutput {
     void showPlayerBlackjack(const std::string& playerName) const;
     void showBlackjackPayout(const std::string& playerName) const;
     void showHitPrompt() const;
+    void showInvalidYesNo() const;
     void showPlayerBust(const std::string& playerName) const;
 
     void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
