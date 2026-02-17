@@ -2,6 +2,21 @@
 
 #include <iostream>
 
+namespace {
+const char* paceModeText(const ui::PaceMode mode) {
+    switch (mode) {
+        case ui::PaceMode::Instant:
+            return "Instant";
+        case ui::PaceMode::Smooth:
+            return "Smooth";
+        case ui::PaceMode::Cinematic:
+            return "Cinematic";
+        default:
+            return "Unknown";
+    }
+}
+} // namespace
+
 void ConsoleOutput::showCasinoMenu() const {
     std::cout << "|====| Deluxe Casino |====|" << std::endl;
     std::cout << "1. Game Selection" << std::endl;
@@ -20,7 +35,22 @@ void ConsoleOutput::showBlackjackMenu() const {
     std::cout << "|====| Main Menu |====|" << std::endl;
     std::cout << "1. Start Game" << std::endl;
     std::cout << "2. Rules" << std::endl;
-    std::cout << "3. Back" << std::endl;
+    std::cout << "3. Pacing" << std::endl;
+    std::cout << "4. Back" << std::endl;
+}
+
+void ConsoleOutput::showPacingMenu(const ui::PaceMode currentMode) const {
+    std::cout << "|====| Pacing Settings |====|" << std::endl;
+    std::cout << "Current mode: " << paceModeText(currentMode) << std::endl;
+    std::cout << "1. Instant" << std::endl;
+    std::cout << "2. Smooth" << std::endl;
+    std::cout << "3. Cinematic" << std::endl;
+    std::cout << "4. Back" << std::endl;
+    std::cout << "Your Choice:" << std::endl;
+}
+
+void ConsoleOutput::showPacingUpdated(const ui::PaceMode mode) const {
+    std::cout << "Pacing mode set to: " << paceModeText(mode) << std::endl;
 }
 
 void ConsoleOutput::showInvalidChoice() const {

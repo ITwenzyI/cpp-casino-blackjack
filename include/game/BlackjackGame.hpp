@@ -20,6 +20,7 @@ class BlackjackGame {
 
   private:
     void showBlackjackMenu();
+    void configurePacing();
     void showRules();
     void playRound();
     bool nextCardPlayer(BlackjackRound& round, const std::string& playerName, int& playerHandValue);

@@ -56,10 +56,42 @@ void BlackjackGame::showBlackjackMenu() {
             showRules();
             break;
         case 3:
+            configurePacing();
+            break;
+        case 4:
             return;
         default:
             output_.showInvalidChoice();
             break;
+    }
+}
+
+void BlackjackGame::configurePacing() {
+    bool isConfiguring = true;
+    while (isConfiguring) {
+        output_.showPacingMenu(pacer_.mode());
+        const int choice = input_.readInt();
+
+        switch (choice) {
+            case 1:
+                pacer_.setMode(ui::PaceMode::Instant);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 2:
+                pacer_.setMode(ui::PaceMode::Smooth);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 3:
+                pacer_.setMode(ui::PaceMode::Cinematic);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 4:
+                isConfiguring = false;
+                break;
+            default:
+                output_.showInvalidChoice();
+                break;
+        }
     }
 }
 
