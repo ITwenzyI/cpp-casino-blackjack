@@ -33,6 +33,7 @@ class ConsoleOutput {
 
     void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
         int playerValue, int dealerValue) const;
+    void showReplayMenu() const;
     void showSatisfactionPrompt() const;
     void showRules() const;
 

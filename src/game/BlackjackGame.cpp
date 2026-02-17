@@ -101,9 +101,6 @@ void BlackjackGame::configurePacing() {
 
 void BlackjackGame::playRound() {
     ConsoleRenderer renderer;
-    BlackjackRound round;
-    int dealerHandValue = 0;
-    int playerHandValue = 0;
     std::string playerName;
 
     output_.promptUsername();
@@ -111,74 +108,88 @@ void BlackjackGame::playRound() {
     input_.discardLine();
     playerName = input_.readLine();
 
-    output_.showWelcome(playerName);
-    output_.showGameStarting();
-    pacer_.pauseMedium();
+    bool keepPlaying = true;
+    while (keepPlaying) {
+        BlackjackRound round;
+        int dealerHandValue = 0;
+        int playerHandValue = 0;
 
-    // Start a new round including initial dealing from the game layer.
-    round.start();
-    clearRenderedHands();
+        output_.showWelcome(playerName);
+        output_.showGameStarting();
+        pacer_.pauseMedium();
 
-    output_.showDealerStartHand();
-    renderer.printHiddenCards(1);
-    pacer_.pauseMedium();
+        // Start a new round including initial dealing from the game layer.
+        round.start();
+        clearRenderedHands();
 
-    output_.showDealerVisualHand();
-    // In this variant the dealer starts with one visible card.
-    const domain::Card dealerStartCard = round.dealerHand().cards().front();
-    dealerHandValue = round.dealerValue();
-    buildHandDealer(dealerStartCard);
-    output_.showDealerHandValue(dealerHandValue);
+        output_.showDealerStartHand();
+        renderer.printHiddenCards(1);
+        pacer_.pauseMedium();
 
-    pacer_.pauseLong();
-    output_.showSeparator();
-
-    output_.showPlayerVisualHand(playerName);
-    for (const domain::Card& playerCard : round.playerHand().cards()) {
-        buildHandPlayer(playerCard);
-    }
-    playerHandValue = round.playerValue();
-
-    output_.showPlayerHandValue(playerName, playerHandValue);
-
-    if (round.playerHasBlackjack()) {
-        output_.showPlayerBlackjack(playerName);
-        output_.showBlackjackPayout(playerName);
-        return;
-    }
-
-    output_.showDealerHandValue(dealerHandValue);
-
-    bool continueRound = true;
-    // Player phase: draw cards until "no" or bust.
-    while (continueRound && playerHandValue < 21) {
-        continueRound = nextCardPlayer(round, playerName, playerHandValue);
-    }
-
-    pacer_.pauseMedium();
-
-    const std::vector<domain::Card> dealerCards = round.playDealerTurn();
-    // Dealer phase including intermediate output for each drawn card.
-    for (const domain::Card& dealerNewCard : dealerCards) {
-        output_.showSeparator();
         output_.showDealerVisualHand();
-        buildHandDealer(dealerNewCard);
+        // In this variant the dealer starts with one visible card.
+        const domain::Card dealerStartCard = round.dealerHand().cards().front();
         dealerHandValue = round.dealerValue();
+        buildHandDealer(dealerStartCard);
         output_.showDealerHandValue(dealerHandValue);
+
         pacer_.pauseLong();
+        output_.showSeparator();
+
+        output_.showPlayerVisualHand(playerName);
+        for (const domain::Card& playerCard : round.playerHand().cards()) {
+            buildHandPlayer(playerCard);
+        }
+        playerHandValue = round.playerValue();
+
+        output_.showPlayerHandValue(playerName, playerHandValue);
+
+        if (round.playerHasBlackjack()) {
+            output_.showPlayerBlackjack(playerName);
+            output_.showBlackjackPayout(playerName);
+        } else {
+            output_.showDealerHandValue(dealerHandValue);
+
+            bool continueRound = true;
+            // Player phase: draw cards until "no" or bust.
+            while (continueRound && playerHandValue < 21) {
+                continueRound = nextCardPlayer(round, playerName, playerHandValue);
+            }
+
+            pacer_.pauseMedium();
+
+            const std::vector<domain::Card> dealerCards = round.playDealerTurn();
+            // Dealer phase including intermediate output for each drawn card.
+            for (const domain::Card& dealerNewCard : dealerCards) {
+                output_.showSeparator();
+                output_.showDealerVisualHand();
+                buildHandDealer(dealerNewCard);
+                dealerHandValue = round.dealerValue();
+                output_.showDealerHandValue(dealerHandValue);
+                pacer_.pauseLong();
+            }
+            dealerHandValue = round.dealerValue();
+            if (dealerHandValue >= 17) {
+                output_.showNoMoreDealerCards();
+            }
+
+            output_.showRoundResult(round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
+            pacer_.pauseLong();
+        }
+
+        output_.showReplayMenu();
+        const int replayChoice = input_.readInt();
+        if (replayChoice == 1) {
+            clearRenderedHands();
+            continue;
+        }
+        if (replayChoice == 2) {
+            keepPlaying = false;
+            clearRenderedHands();
+            continue;
+        }
+        output_.showInvalidChoice();
     }
-    dealerHandValue = round.dealerValue();
-    if (dealerHandValue >= 17) {
-        output_.showNoMoreDealerCards();
-    }
-
-    output_.showRoundResult(round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
-
-    pacer_.pauseLong();
-
-    output_.showSatisfactionPrompt();
-    input_.readWord();
-    clearRenderedHands();
 }
 
 bool BlackjackGame::nextCardPlayer(
