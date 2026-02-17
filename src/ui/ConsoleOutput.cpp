@@ -113,8 +113,16 @@ void ConsoleOutput::showSeparator() const {
     std::cout << "----------------------------------------------------------" << std::endl;
 }
 
+void ConsoleOutput::showDrawingCard() const {
+    std::cout << "Drawing card..." << std::endl;
+}
+
 void ConsoleOutput::showDealerStartHand() const {
     std::cout << "Dealer starting hand:" << std::endl;
+}
+
+void ConsoleOutput::showDealerDrawsCard() const {
+    std::cout << "Dealer draws a card." << std::endl;
 }
 
 void ConsoleOutput::showDealerVisualHand() const {
@@ -131,6 +139,10 @@ void ConsoleOutput::showNoMoreDealerCards() const {
 
 void ConsoleOutput::showPlayerVisualHand(const std::string& playerName) const {
     std::cout << playerName << "'s visual hand:" << std::endl;
+}
+
+void ConsoleOutput::showPlayerDrawsCard(const std::string& playerName) const {
+    std::cout << playerName << " draws a card." << std::endl;
 }
 
 void ConsoleOutput::showPlayerHandValue(const std::string& playerName, const int handValue) const {
