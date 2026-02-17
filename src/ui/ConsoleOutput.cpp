@@ -108,7 +108,7 @@ void ConsoleOutput::showBlackjackPayout(const std::string& playerName) const {
 }
 
 void ConsoleOutput::showHitPrompt() const {
-    std::cout << "Do you want to take another card (yes or no)?" << std::endl;
+    std::cout << "Do you want to take another card (yes/no or h/s)?" << std::endl;
 }
 
 void ConsoleOutput::showInvalidYesNo() const {
