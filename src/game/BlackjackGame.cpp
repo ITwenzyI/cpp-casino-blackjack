@@ -15,6 +15,19 @@ namespace {
 std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
     return {card.rankText(), card.suitText()};
 }
+
+std::string toCardToken(const domain::Card& card) {
+    return card.rankText() + card.suitText();
+}
+
+std::vector<std::string> toCardTokens(const domain::Hand& hand) {
+    std::vector<std::string> tokens;
+    tokens.reserve(hand.cards().size());
+    for (const domain::Card& card : hand.cards()) {
+        tokens.push_back(toCardToken(card));
+    }
+    return tokens;
+}
 } // namespace
 
 namespace game {
@@ -154,6 +167,8 @@ void BlackjackGame::playRound() {
         if (round.playerHasBlackjack()) {
             output_.showPlayerBlackjack(playerName);
             output_.showBlackjackPayout(playerName);
+            output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
+                toCardTokens(round.dealerHand()), round.dealerValue(), game::RoundResult::PlayerWins);
         } else {
             output_.showDealerHandValue(dealerHandValue);
 
@@ -180,8 +195,10 @@ void BlackjackGame::playRound() {
                 output_.showNoMoreDealerCards();
             }
 
-            output_.showRoundResult(
-                round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
+            const game::RoundResult roundResult = round.evaluateResult();
+            output_.showRoundResult(roundResult, playerName, playerHandValue, dealerHandValue);
+            output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
+                toCardTokens(round.dealerHand()), round.dealerValue(), roundResult);
             pacer_.pauseLong();
         }
 

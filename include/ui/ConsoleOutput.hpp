@@ -4,6 +4,7 @@
 #include "game/BlackjackRound.hpp"
 #include "ui/GamePacer.hpp"
 #include <string>
+#include <vector>
 
 class ConsoleOutput {
   public:
@@ -34,6 +35,10 @@ class ConsoleOutput {
 
     void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
         int playerValue, int dealerValue) const;
+    void showRoundSummary(const std::string& playerName,
+        const std::vector<std::string>& playerCards, int playerTotal,
+        const std::vector<std::string>& dealerCards, int dealerTotal,
+        game::RoundResult resultCode) const;
     void showReplayMenu() const;
     void showSatisfactionPrompt() const;
     void showRules() const;
