@@ -19,6 +19,16 @@ std::pair<std::string, std::string> toPrintableCard(const domain::Card& card) {
 
 namespace game {
 
+int BlackjackGame::readMenuChoice(const int minChoice, const int maxChoice) {
+    while (true) {
+        const int choice = input_.readInt();
+        if (choice >= minChoice && choice <= maxChoice) {
+            return choice;
+        }
+        output_.showInvalidChoice();
+    }
+}
+
 void BlackjackGame::run() {
     int mainMenuChoice = 0;
     int gameSelectionChoice = 0;
@@ -27,12 +37,12 @@ void BlackjackGame::run() {
         // Top-level casino menu.
         printBigText("Casino Menu");
         output_.showCasinoMenu();
-        mainMenuChoice = input_.readInt();
+        mainMenuChoice = readMenuChoice(0, 1);
         input_.discardLine();
 
         if (mainMenuChoice == 1) {
             output_.showGameSelectionMenu();
-            gameSelectionChoice = input_.readInt();
+            gameSelectionChoice = readMenuChoice(1, 1);
             input_.discardLine();
 
             if (gameSelectionChoice == 1) {
@@ -48,7 +58,7 @@ void BlackjackGame::showBlackjackMenu() {
         int choice;
         printBigText("BlackJack");
         output_.showBlackjackMenu();
-        choice = input_.readInt();
+        choice = readMenuChoice(1, 4);
 
         switch (choice) {
             case 1:
@@ -74,7 +84,7 @@ void BlackjackGame::configurePacing() {
     bool isConfiguring = true;
     while (isConfiguring) {
         output_.showPacingMenu(pacer_.mode());
-        const int choice = input_.readInt();
+        const int choice = readMenuChoice(1, 4);
 
         switch (choice) {
             case 1:
@@ -91,9 +101,6 @@ void BlackjackGame::configurePacing() {
                 break;
             case 4:
                 isConfiguring = false;
-                break;
-            default:
-                output_.showInvalidChoice();
                 break;
         }
     }
@@ -178,7 +185,7 @@ void BlackjackGame::playRound() {
         }
 
         output_.showReplayMenu();
-        const int replayChoice = input_.readInt();
+        const int replayChoice = readMenuChoice(1, 2);
         if (replayChoice == 1) {
             clearRenderedHands();
             continue;
@@ -188,7 +195,6 @@ void BlackjackGame::playRound() {
             clearRenderedHands();
             continue;
         }
-        output_.showInvalidChoice();
     }
 }
 

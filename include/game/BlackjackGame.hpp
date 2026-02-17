@@ -19,6 +19,7 @@ class BlackjackGame {
     void run();
 
   private:
+    int readMenuChoice(int minChoice, int maxChoice);
     void showBlackjackMenu();
     void configurePacing();
     void showRules();
