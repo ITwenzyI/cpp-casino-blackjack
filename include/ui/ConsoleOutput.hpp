@@ -32,6 +32,8 @@ class ConsoleOutput {
     void showHitPrompt() const;
     void showInvalidYesNo() const;
     void showPlayerBust(const std::string& playerName) const;
+    void showRoundHud(const std::string& playerName, int playerValue, int dealerVisibleValue,
+        ui::PaceMode paceMode) const;
 
     void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
         int playerValue, int dealerValue) const;
