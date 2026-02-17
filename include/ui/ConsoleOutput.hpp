@@ -3,12 +3,15 @@
 
 #include <string>
 #include "game/BlackjackRound.hpp"
+#include "ui/GamePacer.hpp"
 
 class ConsoleOutput {
   public:
     void showCasinoMenu() const;
     void showGameSelectionMenu() const;
     void showBlackjackMenu() const;
+    void showPacingMenu(ui::PaceMode currentMode) const;
+    void showPacingUpdated(ui::PaceMode mode) const;
     void showInvalidChoice() const;
 
     void showWelcome(const std::string& playerName) const;

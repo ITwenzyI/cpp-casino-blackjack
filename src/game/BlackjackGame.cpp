@@ -6,8 +6,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <chrono>
-#include <thread>
 
 #include "ui/ConsoleRenderer.hpp"
 #include "util/BigText.hpp"
@@ -58,10 +56,42 @@ void BlackjackGame::showBlackjackMenu() {
             showRules();
             break;
         case 3:
+            configurePacing();
+            break;
+        case 4:
             return;
         default:
             output_.showInvalidChoice();
             break;
+    }
+}
+
+void BlackjackGame::configurePacing() {
+    bool isConfiguring = true;
+    while (isConfiguring) {
+        output_.showPacingMenu(pacer_.mode());
+        const int choice = input_.readInt();
+
+        switch (choice) {
+            case 1:
+                pacer_.setMode(ui::PaceMode::Instant);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 2:
+                pacer_.setMode(ui::PaceMode::Smooth);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 3:
+                pacer_.setMode(ui::PaceMode::Cinematic);
+                output_.showPacingUpdated(pacer_.mode());
+                break;
+            case 4:
+                isConfiguring = false;
+                break;
+            default:
+                output_.showInvalidChoice();
+                break;
+        }
     }
 }
 
@@ -78,7 +108,7 @@ void BlackjackGame::playRound() {
 
     output_.showWelcome(playerName);
     output_.showGameStarting();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    pacer_.pauseMedium();
 
     // Start a new round including initial dealing from the game layer.
     round.start();
@@ -86,7 +116,7 @@ void BlackjackGame::playRound() {
 
     output_.showDealerStartHand();
     renderer.printHiddenCards(1);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    pacer_.pauseMedium();
 
     output_.showDealerVisualHand();
     // In this variant the dealer starts with one visible card.
@@ -95,7 +125,7 @@ void BlackjackGame::playRound() {
     buildHandDealer(dealerStartCard);
     output_.showDealerHandValue(dealerHandValue);
 
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    pacer_.pauseLong();
     output_.showSeparator();
 
     output_.showPlayerVisualHand(playerName);
@@ -120,7 +150,7 @@ void BlackjackGame::playRound() {
         continueRound = nextCardPlayer(round, playerName, playerHandValue);
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    pacer_.pauseMedium();
 
     const std::vector<domain::Card> dealerCards = round.playDealerTurn();
     // Dealer phase including intermediate output for each drawn card.
@@ -130,7 +160,7 @@ void BlackjackGame::playRound() {
         buildHandDealer(dealerNewCard);
         dealerHandValue = round.dealerValue();
         output_.showDealerHandValue(dealerHandValue);
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        pacer_.pauseLong();
     }
     dealerHandValue = round.dealerValue();
     if (dealerHandValue >= 17) {
@@ -139,7 +169,7 @@ void BlackjackGame::playRound() {
 
     output_.showRoundResult(round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
 
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    pacer_.pauseLong();
 
     output_.showSatisfactionPrompt();
     input_.readWord();

@@ -9,6 +9,7 @@
 #include "game/BlackjackRound.hpp"
 #include "ui/ConsoleInput.hpp"
 #include "ui/ConsoleOutput.hpp"
+#include "ui/GamePacer.hpp"
 
 namespace game {
 
@@ -19,6 +20,7 @@ class BlackjackGame {
 
   private:
     void showBlackjackMenu();
+    void configurePacing();
     void showRules();
     void playRound();
     bool nextCardPlayer(BlackjackRound& round, const std::string& playerName, int& playerHandValue);
@@ -32,6 +34,8 @@ class BlackjackGame {
     ConsoleInput input_;
     // Central output adapter so game logic does not use std::cout directly.
     ConsoleOutput output_;
+    // Central pacing component to control round flow timing.
+    ui::GamePacer pacer_;
 };
 
 } // namespace game
