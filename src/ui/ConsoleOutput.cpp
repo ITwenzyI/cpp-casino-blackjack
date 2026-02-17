@@ -147,6 +147,14 @@ void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
     }
 }
 
+void ConsoleOutput::showReplayMenu() const {
+    std::cout << std::endl;
+    std::cout << "|====| Next Action |====|" << std::endl;
+    std::cout << "1. Play again" << std::endl;
+    std::cout << "2. Back to Blackjack Menu" << std::endl;
+    std::cout << "Your Choice:" << std::endl;
+}
+
 void ConsoleOutput::showSatisfactionPrompt() const {
     std::cout << std::endl << std::endl;
     std::cout << "Thanks for playing Kilian's Blackjack!" << "\nAre you satisfied?" << std::endl;
