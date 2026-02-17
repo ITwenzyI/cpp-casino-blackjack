@@ -43,26 +43,30 @@ void BlackjackGame::run() {
 }
 
 void BlackjackGame::showBlackjackMenu() {
-    int choice;
-    printBigText("BlackJack");
-    output_.showBlackjackMenu();
-    choice = input_.readInt();
+    bool isInBlackjackMenu = true;
+    while (isInBlackjackMenu) {
+        int choice;
+        printBigText("BlackJack");
+        output_.showBlackjackMenu();
+        choice = input_.readInt();
 
-    switch (choice) {
-        case 1:
-            playRound();
-            break;
-        case 2:
-            showRules();
-            break;
-        case 3:
-            configurePacing();
-            break;
-        case 4:
-            return;
-        default:
-            output_.showInvalidChoice();
-            break;
+        switch (choice) {
+            case 1:
+                playRound();
+                break;
+            case 2:
+                showRules();
+                break;
+            case 3:
+                configurePacing();
+                break;
+            case 4:
+                isInBlackjackMenu = false;
+                break;
+            default:
+                output_.showInvalidChoice();
+                break;
+        }
     }
 }
 
