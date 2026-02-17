@@ -22,7 +22,7 @@ The project is structured into four clearly defined responsibility layers:
 
 - `domain`: Pure domain model. Contains no console input/output and no knowledge about the UI.
 - `game`: Encapsulates Blackjack rules and round flow. Coordinates player and dealer logic without directly interacting with the console.
-- `ui`: Responsible for all console interaction. (`ConsoleInput`, `ConsoleOutput`, `ConsoleRenderer`)
+- `ui`: Responsible for all console interaction. (`ConsoleInput`, `ConsoleOutput`, `ConsoleRenderer`, `GamePacer`)
 - `util`: Utility functionality independent of the game rules. (`BigText` - ASCII title generation for menus)
 
 ### Struktur
@@ -40,6 +40,7 @@ include/
     ConsoleInput.hpp
     ConsoleOutput.hpp
     ConsoleRenderer.hpp
+    GamePacer.hpp
   util/
     BigText.hpp
 
@@ -56,6 +57,7 @@ src/
     ConsoleInput.cpp
     ConsoleOutput.cpp
     ConsoleRenderer.cpp
+    GamePacer.cpp
   util/
     BigText.cpp
 ```
