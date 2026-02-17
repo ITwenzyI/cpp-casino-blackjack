@@ -256,6 +256,8 @@ void BlackjackGame::playRound() {
 
             const game::RoundResult roundResult = round.evaluateResult();
             dealerHandValue = round.dealerValue();
+            output_.showContinuePrompt();
+            input_.readLine();
             output_.clearScreen();
             output_.showSection("Result");
             renderDealerHand(false);
@@ -263,8 +265,6 @@ void BlackjackGame::playRound() {
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
             output_.showRoundResult(roundResult, playerName, playerHandValue, dealerHandValue);
             pacer_.pauseLong();
-            output_.showContinuePrompt();
-            input_.readLine();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), roundResult);
             pacer_.pauseLong();

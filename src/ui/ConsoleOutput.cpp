@@ -226,7 +226,7 @@ void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
 
 void ConsoleOutput::showContinuePrompt() const {
     std::cout << std::endl;
-    std::cout << "Press Enter to show the round summary..." << std::endl;
+    std::cout << "Press Enter to continue..." << std::endl;
 }
 
 void ConsoleOutput::showRoundSummary(const std::string& playerName,
