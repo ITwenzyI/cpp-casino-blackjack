@@ -19,13 +19,16 @@ class ConsoleOutput {
     void showWelcome(const std::string& playerName) const;
     void showGameStarting() const;
     void showSeparator() const;
+    void showDrawingCard() const;
 
     void showDealerStartHand() const;
+    void showDealerDrawsCard() const;
     void showDealerVisualHand() const;
     void showDealerHandValue(int handValue) const;
     void showNoMoreDealerCards() const;
 
     void showPlayerVisualHand(const std::string& playerName) const;
+    void showPlayerDrawsCard(const std::string& playerName) const;
     void showPlayerHandValue(const std::string& playerName, int handValue) const;
     void showPlayerBlackjack(const std::string& playerName) const;
     void showBlackjackPayout(const std::string& playerName) const;
