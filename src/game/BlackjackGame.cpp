@@ -144,19 +144,19 @@ void BlackjackGame::playRound() {
 
         output_.showDealerStartHand();
         output_.showDrawingCard();
-        pacer_.pauseShort();
+        pacer_.pauseMedium();
         renderer.printHiddenCards(1);
-        pacer_.pauseShort();
+        pacer_.pauseMedium();
 
         output_.showDealerVisualHand();
         // In this variant the dealer starts with one visible card.
         const domain::Card dealerStartCard = round.dealerHand().cards().front();
         output_.showDealerDrawsCard();
         output_.showDrawingCard();
-        pacer_.pauseShort();
+        pacer_.pauseMedium();
         dealerHandValue = round.dealerValue();
         buildHandDealer(dealerStartCard);
-        pacer_.pauseShort();
+        pacer_.pauseMedium();
 
         pacer_.pauseLong();
         output_.showSeparator();
@@ -165,9 +165,9 @@ void BlackjackGame::playRound() {
         for (const domain::Card& playerCard : round.playerHand().cards()) {
             output_.showPlayerDrawsCard(playerName);
             output_.showDrawingCard();
-            pacer_.pauseShort();
+            pacer_.pauseMedium();
             buildHandPlayer(playerCard);
-            pacer_.pauseShort();
+            pacer_.pauseMedium();
         }
         playerHandValue = round.playerValue();
 
