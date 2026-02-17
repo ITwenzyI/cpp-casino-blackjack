@@ -212,10 +212,12 @@ bool BlackjackGame::nextCardPlayer(
             playerChoiceNextCard.begin(),
             [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
-        if (playerChoiceNextCard == "yes" || playerChoiceNextCard == "ja") {
+        if (playerChoiceNextCard == "yes" || playerChoiceNextCard == "ja" ||
+            playerChoiceNextCard == "h" || playerChoiceNextCard == "hit") {
             break;
         }
-        if (playerChoiceNextCard == "no" || playerChoiceNextCard == "nein") {
+        if (playerChoiceNextCard == "no" || playerChoiceNextCard == "nein" ||
+            playerChoiceNextCard == "s" || playerChoiceNextCard == "stand") {
             return false;
         }
         output_.showInvalidYesNo();
