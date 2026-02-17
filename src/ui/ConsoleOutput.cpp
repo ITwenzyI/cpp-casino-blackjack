@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 namespace {
 const char* paceModeText(const ui::PaceMode mode) {
@@ -56,6 +57,19 @@ std::pair<std::string, std::string> resultAndPayoutText(
     }
 }
 } // namespace
+
+void ConsoleOutput::clearScreen() const {
+#ifdef _WIN32
+    std::system("cls");
+#else
+    std::system("clear");
+#endif
+}
+
+void ConsoleOutput::showSection(const std::string& title) const {
+    std::cout << std::endl;
+    std::cout << "|====| " << title << " |====|" << std::endl;
+}
 
 void ConsoleOutput::showCasinoMenu() const {
     std::cout << "|====| Deluxe Casino |====|" << std::endl;
