@@ -1,6 +1,7 @@
 #include "ui/ConsoleOutput.hpp"
 
 #include <iostream>
+#include <sstream>
 
 namespace {
 const char* paceModeText(const ui::PaceMode mode) {
@@ -13,6 +14,38 @@ const char* paceModeText(const ui::PaceMode mode) {
             return "Cinematic";
         default:
             return "Unknown";
+    }
+}
+
+std::string joinCards(const std::vector<std::string>& cards) {
+    if (cards.empty()) {
+        return "-";
+    }
+
+    std::ostringstream out;
+    for (std::size_t i = 0; i < cards.size(); ++i) {
+        if (i > 0) {
+            out << " ";
+        }
+        out << cards[i];
+    }
+    return out.str();
+}
+
+std::pair<std::string, std::string> resultAndPayoutText(
+    const game::RoundResult resultCode, const std::string& playerName) {
+    switch (resultCode) {
+        case game::RoundResult::DealerWins:
+            return {"Dealer wins", playerName + " loses the stake."};
+        case game::RoundResult::PlayerWins:
+            return {"Player wins", playerName + " receives 2x the stake back."};
+        case game::RoundResult::BothBust:
+            return {"Both bust", "No one wins. " + playerName + " loses the stake."};
+        case game::RoundResult::Push:
+            return {"Push", playerName + " gets the stake back."};
+        case game::RoundResult::Invalid:
+        default:
+            return {"Invalid result", "Result state could not be evaluated."};
     }
 }
 } // namespace
@@ -149,6 +182,22 @@ void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
             showError();
             break;
     }
+}
+
+void ConsoleOutput::showRoundSummary(const std::string& playerName,
+    const std::vector<std::string>& playerCards, const int playerTotal,
+    const std::vector<std::string>& dealerCards, const int dealerTotal,
+    const game::RoundResult resultCode) const {
+    const auto [resultText, payoutText] = resultAndPayoutText(resultCode, playerName);
+
+    std::cout << std::endl;
+    std::cout << "|====| Round Summary |====|" << std::endl;
+    std::cout << "Player cards : " << joinCards(playerCards) << std::endl;
+    std::cout << "Player total : " << playerTotal << std::endl;
+    std::cout << "Dealer cards : " << joinCards(dealerCards) << std::endl;
+    std::cout << "Dealer total : " << dealerTotal << std::endl;
+    std::cout << "Result       : " << resultText << std::endl;
+    std::cout << "Payout       : " << payoutText << std::endl;
 }
 
 void ConsoleOutput::showReplayMenu() const {
