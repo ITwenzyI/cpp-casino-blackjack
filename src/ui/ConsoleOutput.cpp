@@ -57,6 +57,10 @@ void ConsoleOutput::showInvalidChoice() const {
     std::cout << "Invalid choice" << std::endl;
 }
 
+void ConsoleOutput::promptUsername() const {
+    std::cout << "Enter your username: " << std::endl;
+}
+
 void ConsoleOutput::showWelcome(const std::string& playerName) const {
     std::cout << "Welcome to Blackjack " << playerName << std::endl;
 }
@@ -111,8 +115,8 @@ void ConsoleOutput::showPlayerBust(const std::string& playerName) const {
     std::cout << playerName << " ... You are over 21..." << std::endl;
 }
 
-void ConsoleOutput::showRoundResult(const game::RoundResult resultCode, const std::string& playerName,
-    const int playerValue, const int dealerValue) const {
+void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
+    const std::string& playerName, const int playerValue, const int dealerValue) const {
     std::cout << std::endl;
     switch (resultCode) {
         case game::RoundResult::DealerWins:
@@ -164,8 +168,7 @@ void ConsoleOutput::showRules() const {
               << std::endl;
     std::cout << "8. The goal is to be closer to 21 than the dealer without going over."
               << std::endl;
-    std::cout << "9. Blackjack is an Ace plus a 10-value card in the first two cards."
-              << std::endl;
+    std::cout << "9. Blackjack is an Ace plus a 10-value card in the first two cards." << std::endl;
 
     std::cout << std::endl << "|====| Dealer Rules |====|" << std::endl;
     std::cout << "10. The dealer plays last." << std::endl;

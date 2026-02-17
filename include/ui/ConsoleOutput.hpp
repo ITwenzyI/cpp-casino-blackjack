@@ -1,9 +1,9 @@
 #ifndef UI_CONSOLE_OUTPUT_HPP
 #define UI_CONSOLE_OUTPUT_HPP
 
-#include <string>
 #include "game/BlackjackRound.hpp"
 #include "ui/GamePacer.hpp"
+#include <string>
 
 class ConsoleOutput {
   public:
@@ -14,6 +14,7 @@ class ConsoleOutput {
     void showPacingUpdated(ui::PaceMode mode) const;
     void showInvalidChoice() const;
 
+    void promptUsername() const;
     void showWelcome(const std::string& playerName) const;
     void showGameStarting() const;
     void showSeparator() const;
@@ -30,8 +31,8 @@ class ConsoleOutput {
     void showHitPrompt() const;
     void showPlayerBust(const std::string& playerName) const;
 
-    void showRoundResult(
-        game::RoundResult resultCode, const std::string& playerName, int playerValue, int dealerValue) const;
+    void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
+        int playerValue, int dealerValue) const;
     void showSatisfactionPrompt() const;
     void showRules() const;
 
