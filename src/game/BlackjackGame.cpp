@@ -151,7 +151,6 @@ void BlackjackGame::playRound() {
         const domain::Card dealerStartCard = round.dealerHand().cards().front();
         dealerHandValue = round.dealerValue();
         buildHandDealer(dealerStartCard);
-        output_.showDealerHandValue(dealerHandValue);
 
         pacer_.pauseLong();
         output_.showSeparator();
@@ -162,7 +161,6 @@ void BlackjackGame::playRound() {
         }
         playerHandValue = round.playerValue();
 
-        output_.showPlayerHandValue(playerName, playerHandValue);
         output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
 
         if (round.playerHasBlackjack()) {
@@ -171,8 +169,6 @@ void BlackjackGame::playRound() {
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), game::RoundResult::PlayerWins);
         } else {
-            output_.showDealerHandValue(dealerHandValue);
-
             bool continueRound = true;
             // Player phase: draw cards until "no" or bust.
             while (continueRound && playerHandValue < 21) {
@@ -189,7 +185,6 @@ void BlackjackGame::playRound() {
                 output_.showDealerVisualHand();
                 buildHandDealer(dealerNewCard);
                 dealerHandValue = round.dealerValue();
-                output_.showDealerHandValue(dealerHandValue);
                 output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
                 pacer_.pauseLong();
             }
@@ -248,8 +243,6 @@ bool BlackjackGame::nextCardPlayer(
     playerHandValue = round.playerValue();
     const int dealerHandValue = round.dealerValue();
 
-    output_.showPlayerHandValue(playerName, playerHandValue);
-    output_.showDealerHandValue(dealerHandValue);
     output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
     output_.showPlayerVisualHand(playerName);
     buildHandPlayer(playerNewCard);
