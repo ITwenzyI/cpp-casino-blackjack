@@ -224,6 +224,11 @@ void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
     }
 }
 
+void ConsoleOutput::showContinuePrompt() const {
+    std::cout << std::endl;
+    std::cout << "Press Enter to show the round summary..." << std::endl;
+}
+
 void ConsoleOutput::showRoundSummary(const std::string& playerName,
     const std::vector<std::string>& playerCards, const int playerTotal,
     const std::vector<std::string>& dealerCards, const int dealerTotal,

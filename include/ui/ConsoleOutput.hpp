@@ -43,6 +43,7 @@ class ConsoleOutput {
 
     void showRoundResult(game::RoundResult resultCode, const std::string& playerName,
         int playerValue, int dealerValue) const;
+    void showContinuePrompt() const;
     void showRoundSummary(const std::string& playerName,
         const std::vector<std::string>& playerCards, int playerTotal,
         const std::vector<std::string>& dealerCards, int dealerTotal,

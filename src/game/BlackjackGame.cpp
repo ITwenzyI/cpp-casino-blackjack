@@ -200,6 +200,8 @@ void BlackjackGame::playRound() {
             pacer_.pauseShort();
             output_.showBlackjackPayout(playerName);
             pacer_.pauseMedium();
+            output_.showContinuePrompt();
+            input_.readLine();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), game::RoundResult::PlayerWins);
             pacer_.pauseLong();
@@ -257,6 +259,8 @@ void BlackjackGame::playRound() {
             output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
             output_.showRoundResult(roundResult, playerName, playerHandValue, dealerHandValue);
             pacer_.pauseMedium();
+            output_.showContinuePrompt();
+            input_.readLine();
             output_.showRoundSummary(playerName, toCardTokens(round.playerHand()), round.playerValue(),
                 toCardTokens(round.dealerHand()), round.dealerValue(), roundResult);
             pacer_.pauseLong();
@@ -284,6 +288,7 @@ bool BlackjackGame::nextCardPlayer(
     while (true) {
         output_.showHitPrompt();
         playerChoiceNextCard = input_.readWord();
+        input_.discardLine();
         output_.showSeparator();
 
         std::transform(playerChoiceNextCard.begin(), playerChoiceNextCard.end(),
