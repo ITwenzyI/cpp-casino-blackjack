@@ -6,12 +6,12 @@
 namespace ui {
 
 namespace {
-void sleepMs(const int milliseconds) {
-    if (milliseconds <= 0) {
-        return;
+    void sleepMs(const int milliseconds) {
+        if (milliseconds <= 0) {
+            return;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-}
 } // namespace
 
 void GamePacer::setMode(const PaceMode mode) {
