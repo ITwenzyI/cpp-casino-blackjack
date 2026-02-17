@@ -28,6 +28,21 @@ std::vector<std::string> toCardTokens(const domain::Hand& hand) {
     }
     return tokens;
 }
+
+int visibleDealerValue(const game::BlackjackRound& round) {
+    const std::vector<domain::Card>& dealerCards = round.dealerHand().cards();
+    domain::Hand visibleHand;
+
+    for (std::size_t i = 0; i < dealerCards.size(); ++i) {
+        // Keep the initially hidden second dealer card out of the visible HUD value.
+        if (i == 1) {
+            continue;
+        }
+        visibleHand.addCard(dealerCards[i]);
+    }
+
+    return visibleHand.value();
+}
 } // namespace
 
 namespace game {
@@ -156,7 +171,7 @@ void BlackjackGame::playRound() {
         output_.showDealerDrawsCard();
         output_.showDrawingCard();
         pacer_.pauseMedium();
-        dealerHandValue = round.dealerValue();
+        dealerHandValue = visibleDealerValue(round);
         buildHandDealer(dealerStartCard);
         pacer_.pauseMedium();
 
@@ -218,11 +233,11 @@ void BlackjackGame::playRound() {
                 output_.showSeparator();
                 output_.showDealerVisualHand();
                 buildHandDealer(dealerNewCard);
-                dealerHandValue = round.dealerValue();
+                dealerHandValue = visibleDealerValue(round);
                 output_.showRoundHud(playerName, playerHandValue, dealerHandValue, pacer_.mode());
                 pacer_.pauseLong();
             }
-            dealerHandValue = round.dealerValue();
+            dealerHandValue = visibleDealerValue(round);
             if (dealerHandValue >= 17) {
                 output_.showNoMoreDealerCards();
                 pacer_.pauseMedium();
@@ -231,6 +246,7 @@ void BlackjackGame::playRound() {
             pacer_.pauseMedium();
 
             const game::RoundResult roundResult = round.evaluateResult();
+            dealerHandValue = round.dealerValue();
             output_.clearScreen();
             output_.showSection("Result");
             renderDealerHand(false);
@@ -284,7 +300,7 @@ bool BlackjackGame::nextCardPlayer(
 
     const domain::Card playerNewCard = round.playerHit();
     playerHandValue = round.playerValue();
-    const int dealerHandValue = round.dealerValue();
+    const int dealerHandValue = visibleDealerValue(round);
 
     output_.showPlayerDrawsCard(playerName);
     output_.showDrawingCard();
