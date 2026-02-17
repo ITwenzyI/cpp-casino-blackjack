@@ -9,7 +9,8 @@ void BlackjackRound::start() {
     deck_.reset();
     deck_.shuffle();
 
-    // Current game variant: dealer starts with 1 visible card, player with 2.
+    // Standard start: dealer receives one hidden and one visible card, player receives two cards.
+    dealerHand_.addCard(deck_.draw());
     dealerHand_.addCard(deck_.draw());
     playerHand_.addCard(deck_.draw());
     playerHand_.addCard(deck_.draw());
