@@ -17,6 +17,13 @@ const char* paceModeText(const ui::PaceMode mode) {
     }
 }
 
+std::string handValueText(const int value) {
+    if (value < 0) {
+        return "--";
+    }
+    return std::to_string(value);
+}
+
 std::string joinCards(const std::vector<std::string>& cards) {
     if (cards.empty()) {
         return "-";
@@ -150,6 +157,13 @@ void ConsoleOutput::showInvalidYesNo() const {
 
 void ConsoleOutput::showPlayerBust(const std::string& playerName) const {
     std::cout << playerName << " ... You are over 21..." << std::endl;
+}
+
+void ConsoleOutput::showRoundHud(const std::string& playerName, const int playerValue,
+    const int dealerVisibleValue, const ui::PaceMode paceMode) const {
+    std::cout << "[HUD] " << playerName << ": " << handValueText(playerValue)
+              << " | Dealer (visible): " << handValueText(dealerVisibleValue)
+              << " | Pace: " << paceModeText(paceMode) << std::endl;
 }
 
 void ConsoleOutput::showRoundResult(const game::RoundResult resultCode,
