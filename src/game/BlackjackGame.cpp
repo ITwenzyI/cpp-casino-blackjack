@@ -180,7 +180,8 @@ void BlackjackGame::playRound() {
                 output_.showNoMoreDealerCards();
             }
 
-            output_.showRoundResult(round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
+            output_.showRoundResult(
+                round.evaluateResult(), playerName, playerHandValue, dealerHandValue);
             pacer_.pauseLong();
         }
 
