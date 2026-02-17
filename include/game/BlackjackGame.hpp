@@ -28,6 +28,8 @@ class BlackjackGame {
     void buildHandPlayer(const domain::Card& card);
     void buildHandDealer(const domain::Card& card);
     void clearRenderedHands();
+    void renderPlayerHand(const std::string& playerName) const;
+    void renderDealerHand(bool withHiddenCard) const;
 
     std::vector<std::pair<std::string, std::string>> playerRenderedHand_;
     std::vector<std::pair<std::string, std::string>> dealerRenderedHand_;

@@ -8,6 +8,9 @@
 
 class ConsoleOutput {
   public:
+    void clearScreen() const;
+    void showSection(const std::string& title) const;
+
     void showCasinoMenu() const;
     void showGameSelectionMenu() const;
     void showBlackjackMenu() const;
